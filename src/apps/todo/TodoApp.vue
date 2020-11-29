@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-grow-1 flex-row mt-2">
+  <div class="d-flex flex-grow-1 flex-row mt-2 ml-4">
     <v-navigation-drawer
       v-model="drawer"
       :app="$vuetify.breakpoint.mdAndDown"
@@ -8,7 +8,7 @@
       class="elevation-1 rounded flex-shrink-0"
       :right="$vuetify.rtl"
       :class="[$vuetify.rtl ? 'ml-3' : 'mr-3']"
-      width="240"
+      width="340"
     >
       <todo-menu class="todo-app-menu pa-2" @open-compose="openCompose"></todo-menu>
     </v-navigation-drawer>

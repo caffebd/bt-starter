@@ -12,7 +12,7 @@ const { key } = config.maps
 Vue.use(VueGoogleMaps, {
   load: {
     // REPLACE key on configs/maps.js
-    key: 'AIzaSyCw2y2mEZjLeW0fiZQO8zwKrFlOlWf6w58',
+    key: '',
     libraries: 'places' // This is required if you use the Autocomplete plugin
   },
   installComponents: true

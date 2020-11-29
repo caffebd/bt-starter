@@ -39,28 +39,10 @@ import 'animate.css/animate.min.css'
 Vue.config.productionTip = false
 
 var firebaseConfig = {
-    apiKey: "AIzaSyCw2y2mEZjLeW0fiZQO8zwKrFlOlWf6w58",
-    authDomain: "bhaithamen.firebaseapp.com",
-    databaseURL: "https://bhaithamen.firebaseio.com",
-    projectId: "bhaithamen",
-    storageBucket: "bhaithamen.appspot.com",
-    messagingSenderId: "151240183995",
-    appId: "1:151240183995:web:543394afb314ce73ed199e",
-    measurementId: "G-Z102EG94W1"
+
   };
 
-//testdb
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyAQpL0k9nx0E3hCfBSVntWXyjOv2LRb-6M',
-//   authDomain: 'bhaithamendashboard.firebaseapp.com',
-//   databaseURL: 'https://bhaithamendashboard.firebaseio.com',
-//   projectId: 'bhaithamendashboard',
-//   storageBucket: 'bhaithamendashboard.appspot.com',
-//   messagingSenderId: '311902176109',
-//   appId: '1:311902176109:web:cbc2fd3b412435c2245064',
-//   measurementId: 'G-RGJ86DVN8V'
-// }
-// Initialize Firebase
+
 
 firebase.initializeApp(firebaseConfig)
 

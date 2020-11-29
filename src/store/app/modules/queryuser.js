@@ -55,8 +55,15 @@ const state = {
           lng: 8.549867
         },
         infoText: '<strong>Marker 3</strong>'
-      }]
-
+      }],
+  pieChartValues:
+    [
+    { value: 100, name: 'Bloggy Referral' },
+    { value: 100, name: 'Newsletter Users' },
+    { value: 100, name: 'Email Forwarding' },
+    { value: 100, name: 'Referral links' },
+    { value: 100, name: 'Eating pie' }
+    ]
 };
 
 const mutations = {
@@ -130,6 +137,9 @@ const mutations = {
   SET_NEW_MAP_DATA: (state, payload) => {
     state.markers = payload
   },
+  SET_NEW_PIE_DATA: (state, payload) => {
+    state.pieChartValues = payload
+  },
 };
 
 const actions = {
@@ -196,7 +206,9 @@ const actions = {
   async setDates(context, dates) {
     const useDates = dates
     context.commit("SET_DATES", useDates)
-
+  },
+  async setPieData(context, pieData) {
+    context.commit("SET_NEW_PIE_DATA", pieData)
   },
 
   async setMatches(context, dates) {

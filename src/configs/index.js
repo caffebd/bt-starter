@@ -11,8 +11,8 @@ import navigation from './navigation'
 export default {
   // product display information
   product: {
-    name: 'Lux Admin PRO',
-    version: '1.2.0'
+    name: 'Bhai Thamen Admin',
+    version: '1.0.1'
   },
 
   // google maps

@@ -149,7 +149,7 @@
 
 
           <!-- Search with Number -->
-          <v-col cols="3" v-show="mode" class="green lighten-4  mb-0 pb-0 pt-4">
+          <v-col cols="3" v-show="mode" class="blue lighten-4  mb-0 pb-0 pt-4">
             <span class="d-inline-flex">
             <v-text-field
               v-model="email"
@@ -334,6 +334,12 @@ export default {
   },
   data() {
     return {
+      timemin: 0,
+      timemax: 24,
+      timerange: [0, 24],
+      max:99,
+      min:0,
+      range:[0,99],
       form: false,
       mode:false,
       chartType:'Group',
@@ -404,16 +410,16 @@ export default {
       activeCheckBoxes:[],
 
       mapIcons:{
-        "timer":"http://www.clker.com/cliparts/6/8/f/c/11949889971706847115clock01.svg.thumb.png",
-        "timer-sms":"http://www.clker.com/cliparts/6/8/f/c/11949889971706847115clock01.svg.thumb.png",
-        "challenge":"http://www.clker.com/cliparts/3/7/1/3/1194984910785474358stop_sign_miguel_s_nchez_.svg.thumb.png",
-        "challenge-sms":"http://www.clker.com/cliparts/3/7/1/3/1194984910785474358stop_sign_miguel_s_nchez_.svg.thumb.png",
-        "secret":"http://www.clker.com/cliparts/b/3/f/6/11971484551794044476earlyswerver_UK_Speed_Camera_Sign.svg.thumb.png",
-        "secret-sms":"http://www.clker.com/cliparts/b/3/f/6/11971484551794044476earlyswerver_UK_Speed_Camera_Sign.svg.thumb.png",
-        "zone":"http://www.clker.com/cliparts/2/9/b/8/1194984775760075334button-green_benji_park_01.svg.thumb.png",
-        "zones-sms":"http://www.clker.com/cliparts/2/9/b/8/1194984775760075334button-green_benji_park_01.svg.thumb.png",
-        "alarm":"http://www.clker.com/cliparts/h/z/l/u/l/s/speaker-volume-3-th.png",
-        "user-sms":"http://www.clker.com/cliparts/1/T/E/E/t/C/sms-text-th.png"
+        "timer":"https://bhaithamen.web.app/images/maptimer.png",
+        "timer-sms":"https://bhaithamen.web.app/images/maptimersms.png",
+        "challenge":"https://bhaithamen.web.app/images/mapconfront.png",
+        "challenge-sms":"https://bhaithamen.web.app/images/mapconfrontsms.png",
+        "secret":"https://bhaithamen.web.app/images/mapsecret.png",
+        "secret-sms":"https://bhaithamen.web.app/images/mapsecretsms.png",
+        "zone":"https://bhaithamen.web.app/images/mapzone.png",
+        "zones-sms":"https://bhaithamen.web.app/images/mapzonesms.png",
+        "alarm":"https://bhaithamen.web.app/images/mapalarm.png",
+        "user-sms":"https://bhaithamen.web.app/images/mapusersms.png",
      }
 
 
@@ -641,7 +647,7 @@ export default {
                 var aTime = parseInt (moment(theTime).format('HH'))
                 //removed age check for now
                 //if (doc.age >= this.lowerAge && doc.age <= this.upperAge){
-                  if (aTime >= this.lowerTime && aTime <= this.upperTime){
+                  if (aTime >= this.timerange[0] && aTime <= this.timerange[1]){
                     coll.push({ doc })
                   }
                 //}
@@ -793,7 +799,7 @@ export default {
               doc.data()['events'].forEach((doc) => {
                 var theTime = doc.time.seconds*1000
                 var aTime = parseInt (moment(theTime).format('HH'))
-                if (aTime >= this.lowerTime && aTime <= this.upperTime){
+                if (aTime >= this.timerange[0] && aTime <= this.timerange[1]){
                   coll.push({ doc })
                 }
               })

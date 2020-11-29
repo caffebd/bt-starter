@@ -1,6 +1,5 @@
 <template>
   <div>
-    A basic example of using a single infowindow for 3 markers.
     <gmap-map :center="center" :zoom="15" style="width: 100%; height: 500px">
       <gmap-info-window :options="infoOptions" :position="infoWindowPos" :opened="infoWinOpen" @closeclick="infoWinOpen=false">
       </gmap-info-window>

@@ -45,7 +45,13 @@ export default {
   },
   todo: {
     addTask: 'Add Task',
-    tasks: 'Tasks',
+    events: 'App Events',
+    completed: 'Completed',
+    labels: 'Labels'
+  },
+  appfeedback: {
+    addTask: 'Add Task',
+    feedback: 'Feedback',
     completed: 'Completed',
     labels: 'Labels'
   },
@@ -152,6 +158,9 @@ export default {
     logout: 'Logout',
     profile: 'Profile',
     blank: 'Blank Page',
+    appFeedback: 'Feedback',
+    appActions: 'Events',
+    mapspage: 'Maps',
     pages: 'Pages',
     others: 'Others',
     email: 'Email',

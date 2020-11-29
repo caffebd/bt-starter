@@ -3,7 +3,7 @@
     ref="pie"
     style="width: 100%"
     autoresize
-    :options="pie"
+    :options="thePie"
     auto-resize
   />
 </template>
@@ -48,6 +48,42 @@ export default {
       }
     }
   },
+  computed: {
+    thePie () {
+      const aPie = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: this.$store.state.queryuser.pieChartValues
+        },
+        series: [
+          {
+            name: 'Bhai Thamen',
+            type: 'pie',
+            radius: '70%',
+            center: ['50%', '60%'],
+            color: ['#FF9F43','#28C76F','#EA5255','#87ceeb','#7367F0',
+              '#7117F0', '#2367F0', '#1004F0','#E367F0','#FF1F13'],
+            data: this.$store.state.queryuser.pieChartValues,
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      }
+
+      return aPie
+    }
+
+  },
   mounted () {
     let dataIndex = -1
     const { pie } = this.$refs
@@ -70,7 +106,7 @@ export default {
         seriesIndex: 0,
         dataIndex
       })
-    }, 1000)
+    }, 10000)
   }
 }
 </script>

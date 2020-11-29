@@ -1,6 +1,6 @@
 <template>
   <v-card class="min-w-0">
-    <v-text-field
+    <!-- <v-text-field
       v-model="filter"
       class="pa-1 py-2 todo-filter elevation-1"
       placeholder="Filter tasks"
@@ -10,7 +10,7 @@
       clearable
       solo
       flat
-    ></v-text-field>
+    ></v-text-field> -->
 
     <v-divider></v-divider>
 

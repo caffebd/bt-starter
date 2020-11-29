@@ -5,10 +5,10 @@
         <div class="display-2 font-weight-bold primary--text">
           {{ product.name }}
         </div>
-        <div class="title my-2">Welcome! Let's build amazing things together.</div>
-        <v-btn to="/" class="my-4">Take me back</v-btn>
+        <div class="title my-2"></div>
+
       </div>
-      <img class="w-full" src="/images/illustrations/signin-illustration.svg" />
+      <img class="w-full" src="/images/App.png" />
     </v-sheet>
 
     <div class="pa-2 pa-md-4 flex-grow-1 align-center justify-center d-flex flex-column">

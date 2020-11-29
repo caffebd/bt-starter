@@ -36,7 +36,8 @@
 
       <v-divider class="my-1"></v-divider>
 
-      <v-list-item to="/auth/signin">
+      <!-- <v-list-item to="/auth/signin"> -->
+      <v-list-item @click='logoutNow'>
         <v-list-item-icon>
           <v-icon small>mdi-logout-variant</v-icon>
         </v-list-item-icon>
@@ -58,10 +59,18 @@ import config from '../../configs'
 | Quickmenu for user menu shortcuts on the toolbar
 |
 */
+import firebase from 'firebase'
 export default {
   data() {
     return {
       menu: config.toolbar.user
+    }
+  },
+  methods: {
+    async logoutNow() {
+      await firebase.auth().signOut()
+      this.$store.dispatch('user/clearUserData')
+      this.$router.replace('/auth/signin')
     }
   }
 }

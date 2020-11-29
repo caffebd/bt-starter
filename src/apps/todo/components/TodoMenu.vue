@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-btn
+    <!-- <v-btn
       block
       large
       color="primary"
       class="mb-3"
       @click="$emit('open-compose')"
-    >{{ $t('todo.addTask') }}</v-btn>
+    >{{ $t('todo.addTask') }}</v-btn> -->
 
     <v-list nav class="mt-2 pa-0">
       <v-list-item to="/apps/todo/tasks" active-class="primary--text" link>
@@ -15,7 +15,7 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>{{ $t('todo.tasks') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('todo.events') }}</v-list-item-title>
         </v-list-item-content>
 
         <v-list-item-action v-if="incompleteTasks.length > 0">

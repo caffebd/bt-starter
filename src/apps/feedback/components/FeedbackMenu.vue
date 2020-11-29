@@ -1,21 +1,21 @@
 <template>
   <div>
-    <v-btn
+    <!-- <v-btn
       block
       large
       color="primary"
       class="mb-3"
       @click="$emit('open-compose')"
-    >{{ $t('feedback.addTask') }}</v-btn>
+    >{{ $t('feedback.addTask') }}</v-btn> -->
 
     <v-list nav class="mt-2 pa-0">
-      <v-list-item to="/apps/feedback/tasks" active-class="primary--text" link>
+      <v-list-item to="/apps/feedback/feedback" active-class="primary--text" link>
         <v-list-item-icon>
           <v-icon small>mdi-checkbox-marked-circle-outline</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>{{ $t('feedback.tasks') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('appfeedback.feedback') }}</v-list-item-title>
         </v-list-item-content>
 
         <v-list-item-action v-if="incompleteTasks.length > 0">
@@ -30,7 +30,7 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>{{ $t('feedback.completed') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('appfeedback.completed') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -46,6 +46,7 @@
         active-class="primary--text"
         link
       >
+
         <v-list-item-icon>
           <v-icon small :color="label.color">mdi-label-outline</v-icon>
         </v-list-item-icon>

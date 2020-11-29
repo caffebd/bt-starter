@@ -1,3 +1,5 @@
+import store from '../store'
+
 export default [{
   path: '/auth/signin',
   name: 'auth-signin',
@@ -7,8 +9,15 @@ export default [{
   }
 },
 {
+  path: '/mapspage',
+  name: 'mapspage',
+  beforeEnter: guard,
+  component: () => import(/* webpackChunkName: "mapspage" */ '@/pages/dashboard/MapsPage.vue')
+},
+{
   path: '/dashboard/map',
   name: 'map',
+  beforeEnter: guard,
   component: () => import(/* webpackChunkName: "map" */ '@/pages/dashboard/MapPage.vue'),
   meta: {
     layout: 'map'
@@ -74,3 +83,11 @@ export default [{
   name: 'utility-help',
   component: () => import(/* webpackChunkName: "utility-help" */ '@/pages/utility/HelpPage.vue')
 }]
+
+function guard(to, from, next) {
+  if (store.state.user.id) {
+    return next()
+  } else {
+    return next('/auth/signin')
+  }
+}

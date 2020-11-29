@@ -42,41 +42,10 @@
             color="primary"
             @click="signInWithEmailAndPassword"
           >{{ $t('login.button') }}</v-btn>
-
-          <div class="caption font-weight-bold text-uppercase my-3">{{ $t('login.orsign') }}</div>
-
-          <!-- external providers list -->
-          <v-btn
-            v-for="provider in providers"
-            :key="provider.id"
-            :loading="provider.isLoading"
-            :disabled="isSignInDisabled"
-            class="mb-2 primary lighten-2 primary--text text--darken-3"
-            block
-            x-large
-            to="/"
-          >
-            <v-icon small left>mdi-{{ provider.id }}</v-icon>
-            {{ provider.label }}
-          </v-btn>
-
           <div v-if="errorProvider" class="error--text">{{ errorProviderMessages }}</div>
-
-          <div class="mt-5">
-            <router-link to="/auth/forgot-password">
-              {{ $t('login.forgot') }}
-            </router-link>
-          </div>
         </v-form>
       </v-card-text>
     </v-card>
-
-    <div class="text-center mt-6">
-      {{ $t('login.noaccount') }}
-      <router-link to="/auth/signup" class="font-weight-bold">
-        {{ $t('login.create') }}
-      </router-link>
-    </div>
   </div>
 </template>
 
@@ -158,6 +127,7 @@ export default {
         this.errorMsg = 'An unexpected error has occurred!'
         if (error.message) {
           this.errorMsg = error.message
+          console.log(this.errorMsg)
         }
       }
       this.isLoading = false

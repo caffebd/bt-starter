@@ -3,8 +3,11 @@ node_modules
 *.js.map
 *.d.ts
 .yarn
+main.js
 DashboardPage.vue
 MapPage.vue
+MapsPage.vue
 queryuser.js
 TodoApp.vue
+DefaultLayout.vue
 FeedbackApp.vue

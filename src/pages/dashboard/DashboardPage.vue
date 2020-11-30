@@ -556,6 +556,59 @@ export default {
 
     },
 
+    async moveReports(){
+
+      let userIdList=[]
+      let userPhones=[]
+      await db.collection("users").get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+
+        userIdList.push(doc.ref.id)
+        var pn = doc.data()['userPhone']
+        if (pn.length==0){pn='123'}
+        userPhones.push(pn)
+
+      })
+      })
+
+       console.log(userIdList)
+
+      for (var l=0; l<userIdList.length; l++){
+
+
+
+      db.collection("users").doc(userIdList[l]).collection('incidents').get().then((querySnapshot)=> {
+
+      if (querySnapshot.docs.length>0){
+      querySnapshot.forEach(async (doc)=> {
+       // console.log(doc.ref.parent.parent.id)
+        var userId= doc.ref.parent.parent.id
+        var ph = await db.collection('users').doc(userId).get()
+       // console.log(ph.data().userPhone)
+        //console.log(ph.id)
+      var theID = doc.id;
+      var theList = doc.data()['incidents']
+      for (var f=0; f<theList.length; f++){
+        //console.log(userIdList[count]+'   '+userPhones[count])
+        Object.assign(theList[f], {userPhone: ph.data().userPhone, userId: ph.id});
+      db.collection("reportsFiled").doc(doc.id)
+      .set({
+        incidents: firebase.firestore.FieldValue.arrayUnion(theList[f])
+    //    'incidents':theList
+      },{merge:true})
+      }
+      console.log (doc.id)
+      console.log(theList)
+
+
+       })
+      }
+
+      })
+      }
+
+    },
+
     async setTimeUserEventsDocs() {
 
       let userIdList=[]

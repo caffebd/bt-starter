@@ -32,21 +32,14 @@ import './filters/formatDate'
 // Main Theme SCSS
 import './assets/scss/theme.scss'
 
-// Animation library - https://animate.style/
+// Animation library - https://animate.style/c
 import 'animate.css/animate.min.css'
 
 // Set this to false to prevent the production tip on Vue startup.
 Vue.config.productionTip = false
 
 var firebaseConfig = {
-    apiKey: "AIzaSyCw2y2mEZjLeW0fiZQO8zwKrFlOlWf6w58",
-    authDomain: "bhaithamen.firebaseapp.com",
-    databaseURL: "https://bhaithamen.firebaseio.com",
-    projectId: "bhaithamen",
-    storageBucket: "bhaithamen.appspot.com",
-    messagingSenderId: "151240183995",
-    appId: "1:151240183995:web:543394afb314ce73ed199e",
-    measurementId: "G-Z102EG94W1"
+
   };
 
 

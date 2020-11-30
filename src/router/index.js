@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from '../store'
 import AppsRoutes from './apps.routes'
 import FeedbackRoutes from './apps.feedback'
+import ReportsRoutes from './apps.reports'
 
 // Routes
 import PagesRoutes from './pages.routes'
@@ -23,6 +24,7 @@ export const routes = [{
 ...UsersRoutes,
 ...AppsRoutes,
 ...FeedbackRoutes,
+...ReportsRoutes,
 {
   path: '/blank',
   name: 'blank',

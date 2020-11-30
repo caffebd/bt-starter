@@ -9,5 +9,7 @@ MapPage.vue
 MapsPage.vue
 queryuser.js
 TodoApp.vue
+ReportsApp.vue
 DefaultLayout.vue
+ReportsCompose.vue
 FeedbackApp.vue

@@ -9,6 +9,7 @@ import AppModule from './app'
 
 import TodoModule from '../apps/todo/store'
 import FeedbackModule from '../apps/feedback/store'
+import ReportsModule from '../apps/reports/store'
 
 const vuexLocal = new VuexPersist({
   storage: window.localStorage
@@ -25,6 +26,7 @@ const store = new Vuex.Store({
     app: AppModule,
     'todo-app': TodoModule,
     'feedback-app': FeedbackModule,
+    'reports-app': ReportsModule,
     user,
     queryuser
   },

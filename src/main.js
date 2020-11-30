@@ -32,7 +32,7 @@ import './filters/formatDate'
 // Main Theme SCSS
 import './assets/scss/theme.scss'
 
-// Animation library - https://animate.style/c
+// Animation library - https://animate.style/
 import 'animate.css/animate.min.css'
 
 // Set this to false to prevent the production tip on Vue startup.

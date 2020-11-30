@@ -18,8 +18,11 @@
 
 
       <div v-for="event in foundEvents" :key="event.id">
+        <h1 v-if="event.cat=='challenge'">CHALLENGE</h1>
+        <h1 v-if="event.cat=='secret'">SECRET</h1>
         <div><p>Event Category: {{event.cat}}</p></div>
         <div><p>Event Type: {{event.type}}</p></div>
+        <div><p>Event ID: {{event.id.replace('found','')}}</p></div>
         <hr class="solid">
       </div>
 

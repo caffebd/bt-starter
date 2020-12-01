@@ -51,6 +51,26 @@
       </v-tabs-items>
     </v-card>
 
+    <!-- Real/Research Data Selection-->
+
+       <v-card class="grey lighten-5 mt-2">
+      <v-container>
+        <v-row>
+          <!-- Group Switch -->
+          <v-col cols="3" class="title cyan lighten-4 white--text">
+              <v-switch
+              class="ml-4"
+              inset
+              v-model="useRealData"
+              color="red"
+              :label="`Data Mode: ${dataSource.toString()}`"
+              @change="toggleDataType($event)"
+              ></v-switch>
+          </v-col>
+        </v-row>
+      </v-container>
+     </v-card>
+
     <!-- Group/Individual or Event Selection-->
     <v-card class="grey lighten-5 mt-2">
       <v-container>
@@ -212,9 +232,9 @@
           </v-col>
         </v-row>
 
-        <!-- Event Selection -->
+        <!-- Event Selection Real DATA-->
 
-        <v-row>
+        <v-row v-if="useRealData">
           <v-col cols="6" class="ml-0 px-0 outlined">
             <v-card class="red lighten-5 pb-4 mr-1 px-0">
               <v-card-title class="red lighten-1 justify-center">
@@ -353,6 +373,151 @@
             </v-card>
           </v-col>
         </v-row>
+
+
+   <!-- Event Selection Research DATA-->
+
+        <v-row v-if="useRealData==false">
+          <v-col cols="6" class="ml-0 px-0 outlined">
+            <v-card class="red lighten-5 pb-4 mr-1 px-0">
+              <v-card-title class="red lighten-1 justify-center">
+                <v-icon
+                      left
+                      large
+                      color="white lighten-2">mdi-alarm-light-outline
+                    </v-icon>
+                    <span class="headline white--text">SOS</span>
+              </v-card-title>
+            <v-divider></v-divider>
+
+            <v-row class="flex-grow-0" dense>
+              <v-col cols="4">
+                <v-checkbox
+                  class="px-2 pt-1"
+                  v-model="challengeCheck"
+                  label="Confront (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchChallenge')"
+                  hide-details
+                ></v-checkbox>
+
+                <v-checkbox
+                  class="px-2"
+                  v-model="challengeSMSCheck"
+                  label="Zone (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchZone')"
+                  hide-details
+                ></v-checkbox>
+              </v-col>
+
+                <v-col cols="4">
+                <v-checkbox
+                  class="px-2 pt-1"
+                  v-model="userSMSCheck"
+                  label="User SMS (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchUserSMS')"
+                  hide-details
+                ></v-checkbox>
+
+                <v-checkbox
+                  class="px-2"
+                  v-model="alarmCheck"
+                  label="Alarm (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchAlarm')"
+                  hide-details
+                ></v-checkbox>
+              </v-col>
+
+              <v-col cols="4">
+                <v-checkbox
+                  class="px-2 pt-1"
+                  v-model="secretCheck"
+                  label="Secret (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchSecret')"
+                  hide-details
+                ></v-checkbox>
+
+                <v-checkbox
+                  class="px-2"
+                  v-model="secretSMSCheck"
+                  label="Reminder (R)"
+                  color="primary"
+                  v-on:change="checkBoxTest('researchTimer')"
+                  hide-details
+                ></v-checkbox>
+              </v-col>
+            </v-row>
+            </v-card>
+          </v-col>
+
+          <v-col cols="3" class="px-1">
+            <v-card class="green lighten-5 pb-4">
+              <v-card-title class="green lighten-1 justify-center">
+                <v-icon
+                      left
+                      large
+                      color="white darken-2">mdi-road-variant
+                    </v-icon>
+                    <span class="headline white--text">Travel</span>
+              </v-card-title>
+
+              <v-checkbox
+                class="px-2 pt-2"
+                v-model="zoneCheck"
+                label="App Opened (R)"
+                color="primary"
+                v-on:change="checkBoxTest('researchAppOpened')"
+                hide-details
+              ></v-checkbox>
+
+              <v-checkbox
+                class="px-2"
+                v-model="zoneSMSCheck"
+                label="Test Mode On (R)"
+                color="primary"
+                v-on:change="checkBoxTest('researchTestOn')"
+                hide-details
+              ></v-checkbox>
+            </v-card>
+          </v-col>
+
+          <v-col cols="3" class="px-1">
+            <v-card class="amber lighten-5 pb-4">
+              <v-card-title class="amber darken-1 justify-center">
+                <v-icon
+                      left
+                      large
+                      color="white darken-2">mdi-alarm
+                    </v-icon>
+                    <span class="headline white--text">Reminder</span>
+              </v-card-title>
+
+              <v-checkbox
+              class="px-2 pt-2"
+              v-model="timerCheck"
+              label="Use Bangla (R)"
+              color="primary"
+              v-on:change="checkBoxTest('researchBangla')"
+              hide-details
+            ></v-checkbox>
+
+            <v-checkbox
+              class="px-2"
+              v-model="timerSMSCheck"
+              label="Use English (R)"
+              color="primary"
+              v-on:change="checkBoxTest('researchEnglish')"
+              hide-details
+            ></v-checkbox>
+            </v-card>
+          </v-col>
+        </v-row>
+
+
       </v-container>
     </v-card>
   </div>
@@ -367,6 +532,7 @@ import PieCard from '../../pages/ui/charts/_examples/echarts/pie'
 import { db } from '../../main'
 import moment from 'moment'
 import firebase from 'firebase'
+import cardListVue from '../ui/components/_examples/lists/intermediate/card-list.vue'
 const query = db.collection('users')
 
 export default {
@@ -376,6 +542,7 @@ export default {
   },
   data() {
     return {
+      useRealData:true,
       chartTabs:['na','Bar Chart', 'Pie Chart'],
       timemin: 0,
       timemax: 24,
@@ -444,13 +611,29 @@ export default {
       userSMSCheck:false,
       alarmCheck:false,
 
+
+
+      researchChallengeList:[],
+      researchAlarmList:[],
+      researchAppOpenedList:[],
+      researchBanglaList:[],
+      researchEnglishList:[],
+      researchSecretList:[],
+      researchTestOnList:[],
+      researchTimerList:[],
+      researchUserSMSList:[],
+      researchZoneList:[],
+
       lowerAge:1,
       upperAge:99,
 
       lowerTime:0,
       upperTime:24,
 
-      activeCheckBoxes:[]
+      activeCheckBoxes:[],
+
+      dataSource:'events',
+      dataList:'events'
 
 
     }
@@ -479,8 +662,21 @@ export default {
       this.zoneList = []
       this.zoneSMSList = []
       this.alarmList = []
+
+      this.researchChallengeList = [],
+      this.researchAlarmList = [],
+      this.researchAppOpenedList = [],
+      this.researchBanglaList = [],
+      this.researchEnglishList = [],
+      this.researchSecretList = [],
+      this.researchTestOnList = [],
+      this.researchTimerList = [],
+      this.researchUserSMSList = [],
+      this.researchZoneList = [],
+
       this.sendBarData = []
       this.sendPieData = []
+
       this.challengeCheck = false
       this.challengeSMSCheck = false
       this.secretCheck = false
@@ -495,8 +691,25 @@ export default {
       this.activeCheckBoxes=[]
 
 
+
       this.$store.dispatch('queryuser/setPieData',this.sendPieData)
       this.$store.dispatch('queryuser/setNewBarChartData',Object.values(this.sendBarData))
+    },
+    toggleDataType(event){
+
+      this.clearAllCriteria()
+
+      if (event==true){
+        this.useRealData = true
+        this.dataSource = 'events',
+        this.dataList = 'events'
+      }else{
+        this.useRealData = false
+        this.dataSource = 'research'
+        this.dataList = 'data'
+      }
+
+
     },
     toggleChartType(event){
       console.log(event)
@@ -512,21 +725,25 @@ export default {
     },
     checkBoxTest(type){
       console.log(type+' '+this.challengeCheck)
-      if (this.activeCheckBoxes.includes(type)){
+      if (this.activeCheckBoxes.includes(type)) {
         this.activeCheckBoxes.splice(this.activeCheckBoxes.indexOf(type), 1);
       }else{
         this.activeCheckBoxes.push(type)
       }
       console.log (this.activeCheckBoxes)
 
-    if (this.chartType=='Group'){
+    if (this.chartType=='Group') {
       this.getGroupData(type, false)
     }else{
+      if (this.useRealData){
       this.selectChartColumns()
+      }else{
+        this.selectResearchChartColumns()
+      }
     }
 
     },
-    dateChangedChecker(i){
+    dateChangedChecker(i) {
 
       if (i==2){
         return
@@ -535,7 +752,7 @@ export default {
       this.sendBarData=[]
       this.sendPieData=[]
 
-    if (this.chartType=='Group'){
+    if (this.chartType=='Group') {
 
       for (var d=0; d<this.activeCheckBoxes.length; d++){
         this.getGroupData(this.activeCheckBoxes[d], true)
@@ -553,6 +770,59 @@ export default {
     }else{
       this.searchUsersByEmail()
     }
+
+    },
+
+    async moveResearch () {
+
+      let userIdList=[]
+      await db.collection("users").get().then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        userIdList.push(doc.ref.id)
+      })
+      })
+
+      for (var l=0; l<userIdList.length; l++){
+      db.collection("users").doc(userIdList[l]).collection('research').get().then((querySnapshot)=> {
+
+      if (querySnapshot.docs.length>0){
+      querySnapshot.forEach(async (doc)=> {
+
+        var idDate = doc.id
+        var theList = doc.data()['data']
+
+
+        //go through data list see what type
+
+        for (var d=0; d<theList.length; d++){
+          console.log(theList[d].event +'   '+idDate)
+          var cat=''
+          var useDate=''
+          switch (theList[d].event) {
+            case 'Use_Bangla':
+              cat = 'researchBangla'
+
+              break;
+
+            default:
+              break;
+          }
+              if (cat.length>0){
+            db.collection(cat).doc(idDate)
+            .set({
+              data: firebase.firestore.FieldValue.arrayUnion(theList[d])
+          //    'incidents':theList
+            },{merge:true})
+            }
+        }
+
+
+
+       })
+      }
+
+      })
+      }
 
     },
 
@@ -644,8 +914,10 @@ export default {
       return Math.floor(Math.random() * Math.floor(max)+16);
     },
 
+
+
     setTimeAllDocs(){
-      db.collection("user-sms").get().then(function(querySnapshot) {
+      db.collection("researchBangla").get().then(function(querySnapshot) {
       querySnapshot.forEach(function(doc) {
       const splitTime=doc.ref.id.split(' ')[0];
       console.log(splitTime)
@@ -663,8 +935,8 @@ export default {
       db.collection(cat).get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
 
-      console.log(doc.data()['events'])
-      temp.push(doc.data()['events'])
+      //console.log(doc.data()[this.dataList])
+      temp.push(doc.data()[this.dataList])
 
     });
     var newTemp;
@@ -757,6 +1029,8 @@ export default {
 
       }
 
+      console.log('CAT  '+category)
+
       await db.collection(category)
         .orderBy('createdAt').startAt(useDates[0]).endAt(useDates[1])
         //   , '==', Date.parse('2020-11-17 00:00:00.000'))
@@ -773,8 +1047,14 @@ export default {
               const { id } = doc
               const usingDate = moment(id).format('MMM Do YY')
 
-              doc.data()['events'].forEach((doc) => {
-                var theTime = doc.time.seconds*1000
+              doc.data()[this.dataList].forEach((doc) => {
+                var theTime
+                if (doc.time){
+                  theTime = doc.time.seconds*1000
+                }else if (doc.date){
+                  theTime = doc.date.seconds*1000
+                }
+
                 var aTime = parseInt (moment(theTime).format('HH'))
                 //removed age check for now
                 //if (doc.age >= this.lowerAge && doc.age <= this.upperAge){
@@ -816,13 +1096,25 @@ console.log(  'search user')
       this.challengeSMSList = []
       this.secretList = []
       this.secretSMSList = []
-      this.timerList = [],
-      this.timerSMSList = [],
-      this.userSMSList = [],
-      this.zoneList = [],
-      this.zoneSMSList = [],
-      this.alarmList = [],
-      this.sendBarData = [],
+      this.timerList = []
+      this.timerSMSList = []
+      this.userSMSList = []
+      this.zoneList = []
+      this.zoneSMSList = []
+      this.alarmList = []
+
+      this.researchChallengeList = [],
+      this.researchAlarmList = [],
+      this.researchAppOpenedList = [],
+      this.researchBanglaList = [],
+      this.researchEnglishList = [],
+      this.researchSecretList = [],
+      this.researchTestOnList = [],
+      this.researchTimerList = [],
+      this.researchUserSMSList = [],
+      this.researchZoneList = [],
+
+      this.sendBarData = []
       this.sendPieData = []
 
       var newNumber;
@@ -914,7 +1206,7 @@ console.log(  'search user')
       //context.commit("SET_MATCHES", categories)
 
       db.collection('users').doc(uid)
-        .collection('events')
+        .collection(this.dataSource)
         .orderBy('createdAt').startAt(useDates[0]).endAt(useDates[1])
         // .where('createdAt'
         //   , '==', Date.parse('2020-11-17 00:00:00.000'))
@@ -933,8 +1225,13 @@ console.log(  'search user')
               const coll = []
               const { id } = doc
 
-              doc.data()['events'].forEach((doc) => {
-                var theTime = doc.time.seconds*1000
+              doc.data()[this.dataList].forEach((doc) => {
+                var theTime
+                if (doc.time){
+                  theTime = doc.time.seconds*1000
+                }else if (doc.date){
+                  theTime = doc.date.seconds*1000
+                }
                 var aTime = parseInt (moment(theTime).format('HH'))
                 if (aTime >= this.timemin && aTime <= this.timemax){
                   coll.push({ doc })
@@ -946,7 +1243,11 @@ console.log(  'search user')
             })
 
             this.allResults = testCollection
+            if (this.useRealData){
             this.createArrays()
+            }else{
+              this.createResearchArrays()
+            }
           }
         })
 
@@ -1075,6 +1376,8 @@ console.log(  'search user')
 
   async fillChartArray(createdList, category){
 
+    console.log('LENGTH '+createdList.length)
+
     var tabulatedList = {}
 
     for (var t=0; t<this.allSearchDates.length; t++){
@@ -1095,6 +1398,135 @@ console.log(  'search user')
 
     return
   },
+
+
+  async createResearchArrays(){
+
+    this.allResults.forEach(doc=>{
+      for (const [key, value] of Object.entries(doc)) {
+          console.log(`NEW ${key}: ${value}`)
+
+            var theKey=key
+
+            for (const [akey, avalue] of Object.entries(doc[theKey])) {
+                console.log(`${akey}: ${avalue}`)
+                const usingDate = moment(avalue['doc']['date'].toDate()).format('MMM Do YY')
+
+
+                console.log(usingDate);
+
+
+                switch (avalue['doc']['event']) {
+                    case 'Challenge_Screen_Recording_Start':
+                        this.researchChallengeList.push({ [usingDate] :avalue['doc']})
+                        //this.challengeList.push(avalue['doc'])
+                        break;
+                    case 'Challenge_Screen_Alarm_Used':
+                        this.researchAlarmList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'App_Opened':
+                        this.researchAppOpenedList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Use_Bangla':
+                        this.researchBanglaList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Use_English':
+                        this.researchEnglishList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Secret_Recording_Started':
+                        this.researchSecretList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Test_Mode_On':
+                        this.researchTestOnList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Countdown_started':
+                        this.researchTimerList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Home_SMS_Press':
+                        this.researchUserSMSList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    case 'Geofence_Start':
+                        this.researchZoneList.push({ [usingDate] :avalue['doc']})
+                        break;
+                    default:
+                        break;
+                }
+             }
+
+            }
+    })
+
+    this.selectResearchChartColumns()
+
+  },
+
+
+  async selectResearchChartColumns(){
+
+    this.sendBarData=[]
+    this.sendPieData=[]
+
+
+ if (this.researchChallengeList.length>0 && this.challengeCheck){
+      this.sendPieData.push({value: this.researchChallengeList.length, name: 'Confront(R)'})
+      await this.fillChartArray(this.researchChallengeList, 'Confront(R)')
+    }
+
+    if (this.researchAlarmList.length>0 && this.alarmCheck){
+      this.sendPieData.push({value: this.researchAlarmList.length, name: 'Alarm(R)'})
+      await this.fillChartArray(this.researchAlarmList, 'Alarm(R)')
+    }
+
+    if (this.researchAppOpenedList.length>0 && this.zoneCheck){
+      this.sendPieData.push({value: this.researchAppOpenedList.length, name: 'AppOpened(R)'})
+      await this.fillChartArray(this.researchAppOpenedList, 'AppOpened(R)')
+    }
+
+    if (this.researchBanglaList.length>0 && this.timerCheck){
+      this.sendPieData.push({value: this.researchBanglaList.length, name: 'Bangla(R)'})
+      await this.fillChartArray(this.researchBanglaList, 'Bangla(R)')
+    }
+
+    if (this.researchEnglishList.length>0 && this.timerSMSCheck){
+      this.sendPieData.push({value: this.researchEnglishList.length, name: 'English(R)'})
+      await this.fillChartArray(this.researchEnglishList, 'English(R)')
+    }
+
+    if (this.researchSecretList.length>0 && this.secretCheck){
+      this.sendPieData.push({value: this.researchSecretList.length, name: 'Secret(R)'})
+      await this.fillChartArray(this.researchSecretList, 'Secret(R)')
+    }
+
+    if (this.researchTestOnList.length>0 && this.zoneSMSCheck){
+      this.sendPieData.push({value: this.researchTestOnList.length, name: 'Test On(R)'})
+      await this.fillChartArray(this.researchTestOnList, 'Test On(R)')
+    }
+
+    if (this.researchTimerList.length>0 && this. secretSMSCheck){
+      this.sendPieData.push({value: this.researchTimerList.length, name: 'Reminder(R)'})
+      await this.fillChartArray(this.researchTimerList, 'Reminder(R)')
+    }
+
+    if (this.researchUserSMSList.length>0 && this.userSMSCheck){
+      this.sendPieData.push({value: this.researchUserSMSList.length, name: 'User SMS(R)'})
+      await this.fillChartArray(this.researchUserSMSList, 'User SMS(R)')
+    }
+
+    if (this.researchZoneList.length>0 && this.challengeSMSCheck){
+      this.sendPieData.push({value: this.researchZoneList.length, name: 'Zone(R)'})
+      await this.fillChartArray(this.researchZoneList, 'Zone(R)')
+    }
+
+    console.log(this.sendPieData)
+     this.$store.dispatch('queryuser/setNewBarChartData',Object.values(this.sendBarData))
+     this.$store.dispatch('queryuser/setPieData', this.sendPieData)
+
+  },
+
+
+
+
+  /// for groups ////
 
   async fillGroupChartArray(createdList, category){
 

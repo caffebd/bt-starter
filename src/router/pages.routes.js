@@ -22,6 +22,14 @@ export default [{
   meta: {
     layout: 'map'
   }
+},{
+  path: '/newsform',
+  name: 'form',
+  beforeEnter: guard,
+  component: () => import(/* webpackChunkName: "form" */ '@/pages/dashboard/NewsFormPage.vue'),
+  meta: {
+    layout: 'default'
+  }
 },  {
   path: '/auth/signup',
   name: 'auth-signup',

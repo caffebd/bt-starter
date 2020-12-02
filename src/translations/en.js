@@ -168,6 +168,7 @@ export default {
     appReports: 'Reports',
     appActions: 'Events',
     mapspage: 'Maps',
+    formspage: 'News Entry',
     pages: 'Pages',
     others: 'Others',
     email: 'Email',

@@ -41,6 +41,7 @@ import ReportsCompose from './components/ReportsCompose'
 import { mapState, mapMutations } from 'vuex'
 import { db } from '../../main'
 import moment from 'moment'
+
 export default {
   components: {
     ReportsMenu,

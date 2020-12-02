@@ -12,7 +12,8 @@ export default {
       //{ icon: 'mdi-file-outline', key: 'menu.blank', text: 'Map Page', link: '/dashboard/map' },
       { icon: 'mdi-lead-pencil', key: 'menu.appActions', text: 'Action Page', link: '/apps/todo' },
       { icon: 'mdi-comment-edit-outline', key: 'menu.appFeedback', text: 'Feedback Page', link: '/apps/feedback' },
-      { icon: 'mdi-alert-circle-outline', key: 'menu.appReports', text: 'Reports Page', link: '/apps/reports' }
+      { icon: 'mdi-alert-circle-outline', key: 'menu.appReports', text: 'Reports Page', link: '/apps/reports' },
+      { icon: 'mdi-alert-circle-outline', key: 'menu.formspage', text: 'Forms Page', link: '/newsform' }
     ]
   }],
 

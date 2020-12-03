@@ -61,6 +61,12 @@ export default {
     completed: 'Completed',
     labels: 'Labels'
   },
+  appnewsfeed: {
+    addTask: 'Add News',
+    newsfeed: 'News',
+    completed: 'Completed',
+    labels: 'Labels'
+  },
   dashboard: {
     activity: 'Activity',
     weeklySales: 'Weekly Sales',

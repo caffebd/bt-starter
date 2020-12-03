@@ -9,6 +9,7 @@ const state = {
   email: null,
   partnerId: null,
   movieApiPage: 1,
+  isAdmin: false,
   matches: [],
   newData:[]
 }
@@ -19,6 +20,7 @@ const mutations = {
     state.name = payload.name
     state.email = payload.email
     state.partnerId = payload.partnerId
+    state.isAdmin = payload.isAdmin
     state.movieApiPage = payload.movieApiPage
   },
   CLEAR_USER_DATA: (state) => {
@@ -26,6 +28,7 @@ const mutations = {
     state.name = null
     state.email = null
     state.partnerId = null
+    state.isAdmin = null
     state.movieApiPage = 1
     state.matches = []
   },

@@ -114,10 +114,13 @@ export default {
 
         const userData = dbUser.data()
 
+        console.log ('my id ' + authRes.user.uid)
+
         this.$store.dispatch('user/setUserData', {
           id: dbUser.id,
           name: userData.name,
           email: userData.email,
+          isAdmin: userData.isAdmin || false,
           partnerId: userData.partnerId || '',
           movieApiPage: userData.movueApiPage || 1
         })

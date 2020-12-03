@@ -4,6 +4,7 @@ import store from '../store'
 import AppsRoutes from './apps.routes'
 import FeedbackRoutes from './apps.feedback'
 import ReportsRoutes from './apps.reports'
+import NewsfeedRoutes from './apps.newsfeed'
 
 // Routes
 import PagesRoutes from './pages.routes'
@@ -25,6 +26,7 @@ export const routes = [{
 ...AppsRoutes,
 ...FeedbackRoutes,
 ...ReportsRoutes,
+...NewsfeedRoutes,
 {
   path: '/blank',
   name: 'blank',

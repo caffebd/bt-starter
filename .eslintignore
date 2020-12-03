@@ -14,3 +14,6 @@ DefaultLayout.vue
 ReportsCompose.vue
 FeedbackApp.vue
 NewsFormPage.vue
+NewsfeedApp.vue
+NewsfeedCompose.vue
+NewsfeedList.vue

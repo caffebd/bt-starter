@@ -223,6 +223,7 @@ export default {
         this.shares = this.task.shares
         this.postType = this.task.labels[0]
         this.imageUrl = this.task.image
+        this.files.push('saved')
         this.show = this.task.show
         this.sortDate = this.task.sortDate
       } else {
@@ -392,13 +393,21 @@ export default {
     imagePreview() {
       const fileReader = new FileReader()
 
+      if (this.files.length>0){
+
       fileReader.addEventListener('load',() => {
         this.imageUrl = fileReader.result
       })
       fileReader.readAsDataURL(this.files[0])
       this.image = this.files[0]
-
       this.imageChanged = true
+      }else{
+        this.image=''
+        this.imageUrl=''
+        this.imageChanged = false
+      }
+
+
     },
     validate () {
       this.$refs.form.validate()

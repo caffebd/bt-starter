@@ -97,7 +97,7 @@ export default {
       return this.newsfeed.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
 
       return this.newsfeed.filter((t) => {
-        return Boolean(Object.values(t).filter((prop) => typeof prop === 'string').find((item) => item.includes(this.filter)))
+        return Boolean(Object.values(t).filter((prop) => typeof prop === 'string').find((item) => item.toLowerCase().includes(this.filter.toLowerCase())))
       })
     }
   },

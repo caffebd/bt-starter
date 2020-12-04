@@ -120,6 +120,7 @@ export default {
           id: dbUser.id,
           name: userData.name,
           email: userData.email,
+          role: userData.role,
           isAdmin: userData.isAdmin || false,
           partnerId: userData.partnerId || '',
           movieApiPage: userData.movueApiPage || 1

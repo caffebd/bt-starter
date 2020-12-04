@@ -1,30 +1,49 @@
-import emailRoutes from '../apps/email/routes'
-import chatRoutes from '../apps/chat/routes'
 import todoRoutes from '../apps/todo/routes'
-import boardRoutes from '../apps/board/routes'
+import Vue from 'vue'
+import Router from 'vue-router'
+import store from '../store'
+
+Vue.use(Router)
 
 export default [{
-  path: '/apps/email',
-  component: () => import(/* webpackChunkName: "apps-email" */ '@/apps/email/EmailApp.vue'),
-  children: [
-    ...emailRoutes
-  ]
-}, {
-  path: '/apps/chat',
-  component: () => import(/* webpackChunkName: "apps-chat" */ '@/apps/chat/ChatApp.vue'),
-  children: [
-    ...chatRoutes
-  ]
-}, {
   path: '/apps/todo',
+  beforeEnter: guard,
   component: () => import(/* webpackChunkName: "apps-todo" */ '@/apps/todo/TodoApp.vue'),
   children: [
     ...todoRoutes
   ]
-}, {
-  path: '/apps/board',
-  component: () => import(/* webpackChunkName: "apps-board" */ '@/apps/board/BoardApp.vue'),
-  children: [
-    ...boardRoutes
-  ]
-}]
+}
+]
+
+function guard(to, from, next) {
+  if (store.state.user.isAdmin) {
+    return next()
+  } else if (store.state.user.id) {
+    return
+  } else {
+    return next('/auth/signin')
+  }
+}
+
+const router = new Router({
+  mode: 'history',
+  base: process.env.BASE_URL || '/',
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+
+    return { x: 0, y: 0 }
+  }
+})
+
+/**
+ * Before each route update
+ */
+router.beforeEach((to, from, next) => {
+  return next()
+})
+
+/**
+ * After each route update
+ */
+router.afterEach((to, from) => {
+})

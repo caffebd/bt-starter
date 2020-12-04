@@ -14,44 +14,22 @@ export default [{
   beforeEnter: guard,
   component: () => import(/* webpackChunkName: "mapspage" */ '@/pages/dashboard/MapsPage.vue')
 },
+// {
+//   path: '/auth/verify-email',
+//   name: 'auth-verify-email',
+//   component: () => import(/* webpackChunkName: "auth-verify-email" */ '@/pages/auth/VerifyEmailPage.vue'),
+//   meta: {
+//     layout: 'auth'
+//   }
+//{
+//   path: '/auth/forgot-password',
+//   name: 'auth-forgot',
+//   component: () => import(/* webpackChunkName: "auth-forgot" */ '@/pages/auth/ForgotPage.vue'),
+//   meta: {
+//     layout: 'auth'
+//   }
+//},
 {
-  path: '/dashboard/map',
-  name: 'map',
-  beforeEnter: guard,
-  component: () => import(/* webpackChunkName: "map" */ '@/pages/dashboard/MapPage.vue'),
-  meta: {
-    layout: 'map'
-  }
-},{
-  path: '/newsform',
-  name: 'form',
-  beforeEnter: guard,
-  component: () => import(/* webpackChunkName: "form" */ '@/pages/dashboard/NewsFormPage.vue'),
-  meta: {
-    layout: 'default'
-  }
-},  {
-  path: '/auth/signup',
-  name: 'auth-signup',
-  component: () => import(/* webpackChunkName: "auth-signup" */ '@/pages/auth/SignupPage.vue'),
-  meta: {
-    layout: 'auth'
-  }
-}, {
-  path: '/auth/verify-email',
-  name: 'auth-verify-email',
-  component: () => import(/* webpackChunkName: "auth-verify-email" */ '@/pages/auth/VerifyEmailPage.vue'),
-  meta: {
-    layout: 'auth'
-  }
-}, {
-  path: '/auth/forgot-password',
-  name: 'auth-forgot',
-  component: () => import(/* webpackChunkName: "auth-forgot" */ '@/pages/auth/ForgotPage.vue'),
-  meta: {
-    layout: 'auth'
-  }
-}, {
   path: '/auth/reset-password',
   name: 'auth-reset',
   component: () => import(/* webpackChunkName: "auth-reset" */ '@/pages/auth/ResetPage.vue'),
@@ -79,22 +57,14 @@ export default [{
   meta: {
     layout: 'auth'
   }
-}, {
-  path: '/utility/coming-soon',
-  name: 'utility-soon',
-  component: () => import(/* webpackChunkName: "utility-soon" */ '@/pages/utility/SoonPage.vue'),
-  meta: {
-    layout: 'auth'
-  }
-}, {
-  path: '/utility/help',
-  name: 'utility-help',
-  component: () => import(/* webpackChunkName: "utility-help" */ '@/pages/utility/HelpPage.vue')
-}]
+}
+]
 
 function guard(to, from, next) {
-  if (store.state.user.id) {
+  if (store.state.user.isAdmin) {
     return next()
+  } else if (store.state.user.id) {
+    return next('/apps/newsfeed')
   } else {
     return next('/auth/signin')
   }

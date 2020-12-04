@@ -22,16 +22,10 @@ export const routes = [{
   component: () => import(/* webpackChunkName: "dashboard" */ '@/pages/dashboard/DashboardPage.vue')
 },
 ...PagesRoutes,
-...UsersRoutes,
 ...AppsRoutes,
 ...FeedbackRoutes,
 ...ReportsRoutes,
 ...NewsfeedRoutes,
-{
-  path: '/blank',
-  name: 'blank',
-  component: () => import(/* webpackChunkName: "blank" */ '@/pages/BlankPage.vue')
-},
 {
   path: '*',
   name: 'error',
@@ -42,8 +36,10 @@ export const routes = [{
 }]
 
 function guard(to, from, next) {
-  if (store.state.user.id) {
+  if (store.state.user.isAdmin) {
     return next()
+  } else if (store.state.user.id) {
+    return next('/apps/newsfeed')
   } else {
     return next('/auth/signin')
   }

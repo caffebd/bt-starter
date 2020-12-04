@@ -25,14 +25,14 @@
     >
       <div v-for="task in visibleTasks" :key="task.id" class="d-flex pa-2 task-item align-center" >
         <!-- @click="$emit('edit-task', task)" was in above line-->
-        <v-checkbox
+        <!-- <v-checkbox
           :input-value="task.completed"
           class="mt-0 pt-0"
           hide-details
           off-icon="mdi-checkbox-blank-circle-outline"
           on-icon="mdi-checkbox-marked-circle"
           @click.stop="task.completed ? setIncomplete(task) : setComplete(task)"
-        ></v-checkbox>
+        ></v-checkbox> -->
 
         <div class="task-item-content flex-grow-1" :class="{ 'complete': task.completed }">
           <div class="font-weight-bold" v-text="task.title"></div>

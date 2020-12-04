@@ -36,10 +36,10 @@
     </v-list>
 
     <v-list dense nav class="mt-2 pa-0">
-      <div class="overline pa-1 mt-2">{{ $t('reports.labels') }}</div>
+      <div class="overline pa-1 mt-2">{{ $t('appreports.labels') }}</div>
 
       <v-list-item
-        v-for="label in labels"
+        v-for="label in reportslabels"
         :key="label.id"
         :to="`/apps/reports/label/${label.id}`"
         exact
@@ -72,7 +72,7 @@ import { mapState, mapGetters } from 'vuex'
 */
 export default {
   computed: {
-    ...mapState('reports-app', ['labels']),
+    ...mapState('reports-app', ['reportslabels']),
     ...mapGetters('reports-app', ['incompleteReports'])
   }
 }

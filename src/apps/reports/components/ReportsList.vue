@@ -52,8 +52,8 @@
           <div><p>Incident Location: {{task.location}}</p></div>
           <div><p>Incident Date: {{task.location}}</p></div>
           <div><p>Incident Description: {{task.description}}</p></div>
-          <div><p>Events: {{task.events}}</p></div>
           <div><p>Contact Number: {{task.phone}}</p></div>
+          <h3 v-if="task.events.length>0">Events Attached (click to see)</h3>
 
         </div>
 

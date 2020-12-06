@@ -1,7 +1,8 @@
 <template>
   <v-dialog v-model="dialog" width="600">
+
     <v-card>
-      <v-card-title class="pa-2">
+      <v-card-title class="justify-center">
         {{ isEdit ? 'Events Found...' : 'Add Task' }}
         <v-spacer></v-spacer>
         <v-btn icon @click="dialog = false">
@@ -11,117 +12,58 @@
 
       <v-divider></v-divider>
 
-      <div>
-        <p>Incident Date: {{this.date}}</p>
-        <hr class="solid">
-      </div>
+
+
+
 
 
       <div v-for="event in foundEvents" :key="event.id">
-        <h1 v-if="event.cat=='challenge'">CHALLENGE</h1>
-        <h1 v-if="event.cat=='secret'">SECRET</h1>
-        <div><p>Event Category: {{event.cat}}</p></div>
-        <div><p>Event Type: {{event.type}}</p></div>
-        <div><p>Event ID: {{event.id.replace('found','')}}</p></div>
-        <hr class="solid">
+
+          <v-container>
+            <v-layout>
+              <v-flex xs12 sm6>
+                <v-card hover>
+
+                  <v-card-title>
+                    <h3 v-if="event.cat=='challenge'">CONFRONT</h3>
+                    <h3 v-if="event.cat=='challenge-sms'">CONFRONT</h3>
+                    <h3 v-if="event.cat=='secret'">SECRET</h3>
+                    <h3 v-if="event.cat=='secret-sms'">SECRET</h3>
+                    <h3 v-if="event.cat=='timer'">TIMER</h3>
+                    <h3 v-if="event.cat=='timer-sms'">TIMER</h3>
+                    <h3 v-if="event.cat=='zone'">GEOFENCE</h3>
+                    <h3 v-if="event.cat=='zone-sms'">GEOFENCE</h3>
+                    <h3 v-if="event.cat=='user-sms'">USER SMS</h3>
+                    <h3 v-if="event.cat=='alarm'">ALARM USED</h3>
+
+                  </v-card-title>
+
+                  <v-card-text>
+                    Event Type: {{event.type}}<br>
+                    Event Id: {{event.id.replace('found','')}}<br>
+                    Location: {{event.time}}
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-btn color=success :href="`https://maps.google.com/?q=${event.location.latitude},${event.location.longitude}`" target="_blank">
+                      See on map
+                    </v-btn>
+                  </v-card-actions>
+
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-container>
+
       </div>
 
-      <!-- task form -->
-      <div>
-        <v-text-field
-          v-model="title"
-          class="px-2 py-1"
-          solo
-          flat
-          :placeholder="$t('common.title')"
-          autofocus
-          hide-details
-          @keyup.enter="save"
-        ></v-text-field>
-
-        <v-divider></v-divider>
-
-        <v-textarea
-          v-model="description"
-          class="px-2 py-1"
-          solo
-          flat
-          :placeholder="$t('common.description')"
-          hide-details
-        ></v-textarea>
-
-        <v-textarea
-          v-model="events"
-          class="px-2 py-1"
-          solo
-          flat
-          :placeholder="$t('common.description')"
-          hide-details
-        ></v-textarea>
-
-        <v-divider></v-divider>
-
-        <v-textarea
-          v-model="date"
-          class="px-2 py-1"
-          solo
-          flat
-          :placeholder="$t('common.description')"
-          hide-details
-        ></v-textarea>
-
-        <v-select
-          v-model="taskLabels"
-          class="px-2 my-3"
-          :menu-props="{ bottom: true, offsetY: true }"
-          :items="labels"
-          placeholder="Labels"
-          item-value="id"
-          hide-selected
-          hide-details
-          solo
-          flat
-          multiple
-        >
-          <template v-slot:selection="{ attrs, item, parent, selected }">
-            <v-chip
-              v-if="item === Object(item)"
-              v-bind="attrs"
-              class="font-weight-bold"
-              :color="item.color"
-              outlined
-              :input-value="selected"
-              label
-            >
-              <span class="pr-2">
-                {{ item.title }}
-              </span>
-              <v-icon
-                small
-                @click="parent.selectItem(item)"
-              >close</v-icon>
-            </v-chip>
-          </template>
-
-          <template v-slot:item="{ index, item }">
-            <v-chip
-              :color="item.color"
-              label
-              outlined
-              small
-            >
-
-            </v-chip>
-          </template>
-        </v-select>
-      </div>
 
       <v-divider></v-divider>
 
       <v-card-actions class="pa-2">
-        <v-btn outlined @click="close">{{ $t('common.cancel') }}</v-btn>
+
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="save">{{ $t('common.save') }}</v-btn>
+        <v-btn color="primary" @click="close">OK</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -150,7 +92,6 @@ export default {
       events:[],
       incidentDate:'',
       foundEvents:[],
-
       taskLabels: [],
       search: null
     }
@@ -190,7 +131,9 @@ export default {
                         id:'found'+post[p].eventId,
                         cat:post[p].category,
                         type: post[p].type,
-                        location: post[p].location
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
                         })
                     }
                   }
@@ -200,6 +143,31 @@ export default {
               }
         })
 
+
+        let csmsref = db.collection('challenge-sms').doc(this.incidentDate)
+        csmsref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
 
         let secretref = db.collection('secret').doc(this.incidentDate)
         secretref.get()
@@ -214,7 +182,8 @@ export default {
                         id:'found'+post[p].eventId,
                         cat:post[p].category,
                         type: post[p].type,
-                        location: post[p].location
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
                         })
                     }
                   }
@@ -224,6 +193,182 @@ export default {
               }
         })
 
+        let smssecretref = db.collection('secret-sms').doc(this.incidentDate)
+        smssecretref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+
+        let timerref = db.collection('timer').doc(this.incidentDate)
+        timerref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+        let smstimerref = db.collection('timer-sms').doc(this.incidentDate)
+        smstimerref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+
+        let zoneref = db.collection('zone').doc(this.incidentDate)
+        zoneref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+        let smszoneref = db.collection('zone-sms').doc(this.incidentDate)
+        smszoneref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+        let smsuserref = db.collection('user-sms').doc(this.incidentDate)
+        smsuserref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
+
+        let alarmref = db.collection('alarm').doc(this.incidentDate)
+        alarmref.get()
+        .then(snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                  let post = snapshot.data()['events']
+                  console.log(post)
+                  for (var p=0; p<post.length; p++){
+                    if (this.events.includes(post[p].eventId)){
+                      console.log('FOUND')
+                      this.foundEvents.push({
+                        id:'found'+post[p].eventId,
+                        cat:post[p].category,
+                        type: post[p].type,
+                        location: post[p].location,
+                        time: moment(post[p].time.seconds*1000).format('MMM Do YY')
+
+                        })
+                    }
+                  }
+              } else {
+                  // snapshot.data() will be undefined in this case
+                  console.log("No such  challenge document!");
+              }
+        })
 
       } else {
         this.task = {}

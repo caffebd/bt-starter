@@ -67,6 +67,12 @@ export default {
     completed: 'Completed',
     labels: 'Labels'
   },
+  appalerts: {
+    addTask: 'Add Alert',
+    alerts: 'Alerts',
+    completed: 'Completed',
+    labels: 'Labels'
+  },
   dashboard: {
     activity: 'Activity',
     weeklySales: 'Weekly Sales',
@@ -171,6 +177,7 @@ export default {
     profile: 'Profile',
     blank: 'Blank Page',
     appFeedback: 'Feedback',
+    appAlerts: 'Alerts',
     appReports: 'Reports',
     appActions: 'Events',
     mapspage: 'Maps',

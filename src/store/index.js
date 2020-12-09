@@ -11,6 +11,7 @@ import TodoModule from '../apps/todo/store'
 import FeedbackModule from '../apps/feedback/store'
 import ReportsModule from '../apps/reports/store'
 import NewsfeedModule from '../apps/newsfeed/store'
+import AlertsModule from '../apps/alerts/store'
 
 const vuexLocal = new VuexPersist({
   storage: window.localStorage
@@ -29,6 +30,7 @@ const store = new Vuex.Store({
     'feedback-app': FeedbackModule,
     'reports-app': ReportsModule,
     'newsfeed-app': NewsfeedModule,
+    'alerts-app': AlertsModule,
     user,
     queryuser
   },

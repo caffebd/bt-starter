@@ -18,12 +18,13 @@
       <div class="px-1 py-6 text-center">No news</div>
     </div>
 
-    <v-slide-y-transition
-      v-else
-      group
-      tag="div"
-    >
-      <div v-for="task in visiblenewsfeed" :key="task.id" @click="$emit('edit-newsfeed', task)" class="d-flex pa-2 task-item align-center" >
+    <v-slide-y-transition v-else group tag="div">
+      <div
+        v-for="(task, z) in visiblenewsfeed"
+        :key="z"
+        @click="$emit('edit-newsfeed', task)"
+        class="d-flex pa-2 task-item align-center"
+      >
         <!-- @click="$emit('edit-task', task)" was in above line-->
         <!-- <v-checkbox
           :input-value="task.completed"
@@ -34,7 +35,10 @@
           @click.stop="task.completed ? setIncomplete(task) : setComplete(task)"
         ></v-checkbox> -->
 
-        <div class="task-item-content flex-grow-1" :class="{ 'complete': task.completed }">
+        <div
+          class="task-item-content flex-grow-1"
+          :class="{ complete: task.completed }"
+        >
           <div>
             <v-chip
               v-for="label in task.labels"
@@ -48,15 +52,26 @@
             </v-chip>
           </div>
           <div><p></p></div>
-          <div><p>Title: {{task.title}}</p></div>
-          <div><p>Author: {{task.author}}</p></div>
-          <div><p>Date: {{ readableTime(task.time.seconds * 1000) }}</p></div>
-          <div><p>Article: {{task.article}}</p></div>
-
+          <div>
+            <p>Title: {{ task.title }}</p>
+          </div>
+          <div>
+            <p>Author: {{ task.author }}</p>
+          </div>
+          <div>
+            <p>Date: {{ readableTime(task.time.seconds * 1000) }}</p>
+          </div>
+          <div>
+            <p>Article: {{ task.article }}</p>
+          </div>
         </div>
 
         <div v-show="$store.state.user.isAdmin" class="d-flex align-center">
-          <v-btn v-show="$store.state.user.isAdmin" icon @click.stop="beginDelete(task)">
+          <v-btn
+            v-show="$store.state.user.isAdmin"
+            icon
+            @click.stop="beginDelete(task)"
+          >
             <v-icon>mdi-delete-outline</v-icon>
           </v-btn>
         </div>
@@ -66,7 +81,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations } from "vuex";
 
 /*
 |---------------------------------------------------------------------
@@ -76,7 +91,7 @@ import { mapState, mapMutations } from 'vuex'
 | Task lister
 |
 */
-import moment from 'moment'
+import moment from "moment";
 export default {
   props: {
     // task list
@@ -87,48 +102,53 @@ export default {
   },
   data() {
     return {
-      filter: ''
-    }
+      filter: ""
+    };
   },
   computed: {
-    ...mapState('newsfeed-app', ['newsfeedlabels']),
+    ...mapState("newsfeed-app", ["newsfeedlabels"]),
     visiblenewsfeed() {
       if (!this.filter)
-      return this.newsfeed.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
+        return this.newsfeed.sort((a, b) => (a.sortDate < b.sortDate ? 1 : -1));
 
-      return this.newsfeed.filter((t) => {
-        return Boolean(Object.values(t).filter((prop) => typeof prop === 'string').find((item) => item.toLowerCase().includes(this.filter.toLowerCase())))
-      })
+      return this.newsfeed.filter(t => {
+        return Boolean(
+          Object.values(t)
+            .filter(prop => typeof prop === "string")
+            .find(item =>
+              item.toLowerCase().includes(this.filter.toLowerCase())
+            )
+        );
+      });
     }
   },
   methods: {
-    ...mapMutations('newsfeed-app', {
-      setComplete: 'newsfeedCompleted',
-      setIncomplete: 'newsfeedIncomplete',
-      deleteNewsfeed: 'deleteNewsfeed'
+    ...mapMutations("newsfeed-app", {
+      setComplete: "newsfeedCompleted",
+      setIncomplete: "newsfeedIncomplete",
+      deleteNewsfeed: "deleteNewsfeed"
     }),
-    readableTime(seconds){
-      return moment(new Date(seconds)).format('Do MMM YY -- H:m')
+    readableTime(seconds) {
+      return moment(new Date(seconds)).format("Do MMM YY -- H:m");
     },
     getLabelColor(id) {
-      const label = this.newsfeedlabels.find((l) => l.id === id)
+      const label = this.newsfeedlabels.find(l => l.id === id);
 
-      return label ? label.color : ''
+      return label ? label.color : "";
     },
     getLabelTitle(id) {
+      const label = this.newsfeedlabels.find(l => l.id === id);
 
-      const label = this.newsfeedlabels.find((l) => l.id === id)
-
-      return label ? label.title : ''
+      return label ? label.title : "";
     },
-    beginDelete(task){
-      console.log(this.$store.state.user.isAdmin)
-      if (this.$store.state.user.isAdmin){
-        this.deleteNewsfeed(task)
+    beginDelete(task) {
+      console.log(this.$store.state.user.isAdmin);
+      if (this.$store.state.user.isAdmin) {
+        this.deleteNewsfeed(task);
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

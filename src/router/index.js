@@ -5,6 +5,7 @@ import AppsRoutes from './apps.routes'
 import FeedbackRoutes from './apps.feedback'
 import ReportsRoutes from './apps.reports'
 import NewsfeedRoutes from './apps.newsfeed'
+import AlertsRoutes from './apps.alerts'
 
 // Routes
 import PagesRoutes from './pages.routes'
@@ -26,6 +27,7 @@ export const routes = [{
 ...FeedbackRoutes,
 ...ReportsRoutes,
 ...NewsfeedRoutes,
+...AlertsRoutes,
 {
   path: '*',
   name: 'error',

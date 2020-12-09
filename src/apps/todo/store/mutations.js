@@ -6,20 +6,27 @@
 export default {
   addTask: (state, task) => {
     state.tasks.push({
-      id: '_' + Math.random().toString(36).substr(2, 9),
+      //id: task.id,
       ...task,
       completed: false
     })
+    state.tasks.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
   },
   clearTasks: (state) => {
     state.tasks = []
   },
   updateTask: (state, task) => {
+
+    console.log('update ' + task.id)
+
     const taskIdx = state.tasks.find((t) => t.id === task.id)
+
+    console.log(taskIdx)
 
     Object.assign(taskIdx, task)
   },
   taskCompleted: (state, task) => {
+
     const taskIdx = state.tasks.findIndex((t) => t.id === task.id)
 
     state.tasks[taskIdx].completed = true
@@ -29,8 +36,10 @@ export default {
 
     state.tasks[taskIdx].completed = false
   },
-  deleteTask: (state, task) => {
-    const taskIdx = state.tasks.findIndex((t) => t.id === task.id)
+  deleteTask: (state, taskId) => {
+    console.log('DELETE ' + taskId)
+
+    const taskIdx = state.tasks.findIndex((t) => t.id === taskId)
 
     if (taskIdx !== -1) state.tasks.splice(taskIdx, 1)
   }

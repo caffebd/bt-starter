@@ -9,6 +9,8 @@ MapPage.vue
 MapsPage.vue
 queryuser.js
 TodoApp.vue
+AlertsApp.vue
+AlertsList.vue
 ReportsApp.vue
 DefaultLayout.vue
 ReportsCompose.vue
@@ -17,3 +19,5 @@ NewsFormPage.vue
 NewsfeedApp.vue
 NewsfeedCompose.vue
 NewsfeedList.vue
+NavMenuItem.vue
+

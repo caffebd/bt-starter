@@ -23,7 +23,8 @@
       group
       tag="div"
     >
-      <div v-for="task in visiblereports" :key="task.id" @click="$emit('edit-reports', task)" class="d-flex pa-2 task-item align-center" >
+
+      <div v-for="(task, i) in visiblereports" :key="'r'+ i" @click="$emit('edit-reports', task)" class="d-flex pa-2 task-item align-center" >
         <!-- @click="$emit('edit-task', task)" was in above line-->
         <!-- <v-checkbox
           :input-value="task.completed"

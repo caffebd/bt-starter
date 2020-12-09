@@ -14,8 +14,9 @@
 
     <v-divider></v-divider>
 
-    <div v-if="tasks.length === 0">
-      <div class="px-1 py-6 text-center">All done! No more tasks!</div>
+
+    <div v-if="myAlerts.length==0">
+      <div class="px-1 py-6 text-center">Alerts loading...</div>
     </div>
 
     <v-slide-y-transition
@@ -23,21 +24,27 @@
       group
       tag="div"
     >
-      <div v-for="(task, i) in visibleTasks" :key="'e'+ i" class="d-flex pa-2 task-item align-center" >
+
+        <div v-for="(task, i) in visibleAlerts" :key="i" class="d-flex pa-2 task-item align-center">
         <!-- @click="$emit('edit-task', task)" was in above line-->
-        <v-checkbox
+        <!-- <v-checkbox
           :input-value="task.completed"
           class="mt-0 pt-0"
           hide-details
           off-icon="mdi-checkbox-blank-circle-outline"
           on-icon="mdi-checkbox-marked-circle"
           @click.stop="task.completed ? setIncomplete(task) : setComplete(task)"
-        ></v-checkbox>
+        ></v-checkbox> -->
 
         <div class="task-item-content flex-grow-1" :class="{ 'complete': task.completed }">
-          <div class="font-weight-bold" v-text="task.title"></div>
-          <div v-text="task.description"></div>
+          <div class="font-weight-bold" v-text="task.category"></div>
           <div v-text="task.date"></div>
+          <div v-text="task.userphone"></div>
+          <div v-text="task.type"></div>
+          <div v-text="task.id"></div>
+          <v-btn x-small elevation="8" color=primary :href="`https://maps.google.com/?q=${task.location.latitude},${task.location.longitude}`" target="_blank">
+            See on map
+          </v-btn>
           <div>
             <v-chip
               v-for="label in task.labels"
@@ -63,7 +70,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 
 /*
 |---------------------------------------------------------------------
@@ -76,7 +83,7 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   props: {
     // task list
-    tasks: {
+    alerts: {
       type: Array,
       default: () => []
     }
@@ -86,21 +93,24 @@ export default {
       filter: ''
     }
   },
-  computed: {
-    ...mapState('todo-app', ['labels']),
-    visibleTasks() {
-      if (!this.filter) return this.tasks
 
-      return this.tasks.filter((t) => {
+  computed: {
+    ...mapState('alerts-app', ['labels']),
+    ...mapGetters('alerts-app', ['incompleteAlerts', 'myAlerts']),
+    visibleAlerts() {
+
+      if (!this.filter) return this.alerts
+
+      return this.alerts.filter((t) => {
         return Boolean(Object.values(t).filter((prop) => typeof prop === 'string').find((item) => item.includes(this.filter)))
       })
     }
   },
   methods: {
-    ...mapMutations('todo-app', {
-      setComplete: 'taskCompleted',
-      setIncomplete: 'taskIncomplete',
-      deleteTask: 'deleteTask'
+    ...mapMutations('alerts-app', {
+      setComplete: 'alertsCompleted',
+      setIncomplete: 'alertsIncomplete',
+      deleteTask: 'deleteAlerts'
     }),
     getLabelColor(id) {
       const label = this.labels.find((l) => l.id === id)
@@ -112,12 +122,15 @@ export default {
 
       return label ? label.title : ''
     }
+  },
+  mounted() {
+// I'm text inside the component.
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.todo-filter {
+.alerts-filter {
   position: sticky;
   background-color: var(--v-background-base) !important;
   z-index: 2;

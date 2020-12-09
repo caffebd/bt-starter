@@ -11,6 +11,7 @@ export default {
       ...reports,
       completed: false
     })
+
   },
   clearReports: (state) => {
     state.reports = []

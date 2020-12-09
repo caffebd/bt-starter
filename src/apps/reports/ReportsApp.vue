@@ -56,6 +56,8 @@ export default {
   created() {
     var tempHolder=[]
     this.clearReports()
+    this.$store.state.user.viewingAlerts=false
+
     db.collection('reportsFiled').get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {

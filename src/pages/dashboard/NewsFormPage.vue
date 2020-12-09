@@ -163,7 +163,9 @@ export default {
     ],
     checkbox: false
   }),
-
+  mounted(){
+    this.$store.state.user.viewingAlerts=false
+  },
   methods: {
     async post () {
       const unix = Math.round(+new Date() / 10)

@@ -437,6 +437,9 @@ export default {
   beforeDestroy() {
     this.clear()
   },
+  mounted(){
+    this.$store.state.user.viewingAlerts=false
+  },
   methods: {
     clearAllCriteria(){
       this.challengeList = []

@@ -12,7 +12,10 @@ const state = {
   isAdmin: false,
   role:'',
   matches: [],
-  newData:[]
+  newData: [],
+  color: 'blue',
+  viewingAlerts:'false',
+  newMessages:1
 }
 
 const mutations = {

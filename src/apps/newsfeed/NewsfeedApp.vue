@@ -10,7 +10,10 @@
       :class="[$vuetify.rtl ? 'ml-3' : 'mr-3']"
       width="340"
     >
-      <newsfeed-menu class="newsfeed-app-menu pa-2" @open-compose="openCompose"></newsfeed-menu>
+      <newsfeed-menu
+        class="newsfeed-app-menu pa-2"
+        @open-compose="openCompose"
+      ></newsfeed-menu>
     </v-navigation-drawer>
 
     <div class="d-flex flex-grow-1 flex-column">
@@ -18,7 +21,11 @@
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <div class="title font-weight-bold">Newsfeed App</div>
       </v-toolbar>
-      <router-view :key="$route.fullPath" class="flex-grow-1" @edit-newsfeed="openCompose"></router-view>
+      <router-view
+        :key="$route.fullPath"
+        class="flex-grow-1"
+        @edit-newsfeed="openCompose"
+      ></router-view>
     </div>
 
     <newsfeed-compose ref="compose" />
@@ -26,9 +33,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import NewsfeedMenu from './components/NewsfeedMenu'
-import NewsfeedCompose from './components/NewsfeedCompose'
+import { mapActions } from "vuex";
+import NewsfeedMenu from "./components/NewsfeedMenu";
+import NewsfeedCompose from "./components/NewsfeedCompose";
 
 /*
 |---------------------------------------------------------------------
@@ -38,9 +45,9 @@ import NewsfeedCompose from './components/NewsfeedCompose'
 | Application layout
 |
 */
-import { mapState, mapMutations } from 'vuex'
-import { db } from '../../main'
-import moment from 'moment'
+import { mapState, mapMutations } from "vuex";
+import { db } from "../../main";
+import moment from "moment";
 
 export default {
   components: {
@@ -50,81 +57,93 @@ export default {
   data() {
     return {
       drawer: null,
-      newsfeed:[]
-    }
+      newsfeed: []
+    };
   },
   created() {
-    var tempHolder=[]
-    this.clearNewsfeed()
-    db.collection('newsfeed').get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        //console.log (doc.data())
-        //const fbTask = doc.data()
+    var tempHolder = [];
+    this.clearNewsfeed();
+    this.$store.state.user.viewingAlerts = false;
+    db.collection("newsfeed").onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        let doc = change.doc;
 
-       // console.log(doc.data())
+        console.log(doc.data()["title"]);
 
-          //fbTask[i].id = doc.id
+        var sortTime = doc.data().time.seconds * 1000;
+        var myDate = moment(sortTime).format("MMM Do YY");
+        //console.log (myDate)
 
-          console.log (doc.data()['title'])
+        var setLabel = [doc.data()["cat"]];
+        console.log(doc.data()["likes"]);
 
-          var sortTime = doc.data().time.seconds*1000
-          var myDate = moment(sortTime).format('MMM Do YY')
-          //console.log (myDate)
+        if (change.type == "removed") {
+          const dTask = {
+            id: doc.id
+          };
 
-
-          var setLabel = [doc.data()['cat']]
-          console.log(doc.data()['likes'])
-
-          // var atEvents=[]
-          // if (fbTask[i].attachedEvents!=null){
-          //   atEvents = fbTask[i].attachedEvents
-          // }
-
-                const aTask = {
-                  sortDate: sortTime,
-                  id: doc.id,
-                  title: doc.data()['title'],
-                  article: doc.data()['article'],
-                  author: doc.data()['author'],
-                  show: doc.data()['show'],
-                  likes: doc.data()['likes'],
-                  shares: doc.data()['shares'],
-                  time: doc.data()['time'],
-                  category: doc.data()['cat'],
-                  labels: [doc.data()['cat']],
-                  image: doc.data()['image'],
-                  show: doc.data()['show'],
-                }
-
-                tempHolder.push(aTask)
-
-      })
-        //console.log(tempHolder)
-        tempHolder.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
-        for (var i=0; i<tempHolder.length; i++){
-          console.log(tempHolder[i])
-          this.addNewsfeed(tempHolder[i])
+          this.deleteNewsfeedRemote(dTask);
+        } else if (change.type == "modified") {
+          const aTask = {
+            sortDate: sortTime,
+            id: doc.id,
+            title: doc.data()["title"],
+            article: doc.data()["article"],
+            author: doc.data()["author"],
+            show: doc.data()["show"],
+            likes: doc.data()["likes"],
+            shares: doc.data()["shares"],
+            time: doc.data()["time"],
+            category: doc.data()["cat"],
+            labels: [doc.data()["cat"]],
+            image: doc.data()["image"],
+            show: doc.data()["show"],
+            completed: doc.data()["completed"] ?? false
+          };
+          this.updateNewsfeed(aTask);
+        } else {
+          const aTask = {
+            sortDate: sortTime,
+            id: doc.id,
+            title: doc.data()["title"],
+            article: doc.data()["article"],
+            author: doc.data()["author"],
+            show: doc.data()["show"],
+            likes: doc.data()["likes"],
+            shares: doc.data()["shares"],
+            time: doc.data()["time"],
+            category: doc.data()["cat"],
+            labels: [doc.data()["cat"]],
+            image: doc.data()["image"],
+            show: doc.data()["show"],
+            completed: doc.data()["completed"] ?? false
+          };
+          this.addNewsfeed(aTask);
         }
-
-
-    })
-
-
-
-
+      });
+      //console.log(tempHolder)
+      // tempHolder.sort((a, b) => (a.sortDate < b.sortDate ? 1 : -1));
+      // for (var i = 0; i < tempHolder.length; i++) {
+      //   console.log(tempHolder[i]);
+      //   this.addNewsfeed(tempHolder[i]);
+      // }
+    });
 
     //this.addTask(tempHolder)
   },
   methods: {
-    ...mapMutations('newsfeed-app', ['updateNewsfeed', 'addNewsfeed', 'clearNewsfeed']),
+    ...mapMutations("newsfeed-app", [
+      "updateNewsfeed",
+      "addNewsfeed",
+      "clearNewsfeed",
+      "deleteNewsfeedRemote"
+    ]),
     openCompose(newsfeed) {
-      this.$refs.compose.open(newsfeed)
+      this.$refs.compose.open(newsfeed);
     },
     newsfeedAdding() {
-      this.addNewsfeed(newsfeed)
+      this.addNewsfeed(newsfeed);
     }
   }
-
-}
+};
 </script>

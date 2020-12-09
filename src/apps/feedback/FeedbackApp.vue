@@ -55,6 +55,7 @@ export default {
   created() {
     var tempHolder=[]
     this.clearTasks()
+    this.$store.state.user.viewingAlerts=false
     db.collection('appFeedback').get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {

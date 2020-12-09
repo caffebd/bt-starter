@@ -640,7 +640,7 @@ export default {
   },
   mounted() {
     let count = 0
-
+    this.$store.state.user.viewingAlerts=false
     // DEMO delay for loading graphics
     this.loadingInterval = setInterval(() => {
       this[`isLoading${count++}`] = false

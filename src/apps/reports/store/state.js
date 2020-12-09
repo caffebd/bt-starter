@@ -1,5 +1,4 @@
 import reports from './content/reports'
-
 /*
 |---------------------------------------------------------------------
 | TODO Vuex State

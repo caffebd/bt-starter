@@ -55,16 +55,87 @@ export default {
   created() {
     var tempHolder=[]
     this.clearTasks()
-    db.collection('requestedDeleteAccount').get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        console.log (doc.data())
-        const fbTask = doc.data()
+    this.$store.state.user.viewingAlerts=false
 
-        fbTask.id = doc.id
-        this.tasks.push(fbTask)
-         var sortTime = doc.data()['date'].seconds*1000
-         var myDate = moment(sortTime).format('MMM Do YY')
+    let refdata= db.collection('requestedDeleteData')
+
+    refdata.onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+
+
+
+        let doc = change.doc
+        var sortTime = doc.data()['date'].seconds*1000
+        var myDate = moment(sortTime).format('MMM Do YY')
+
+        if (change.type=='removed'){
+
+          this.deleteTask(doc.id+'data')
+
+          }else if (change.type=='modified') {
+
+              const aTask = {
+                id: doc.id+'data',
+                title: 'Delete Data',
+                description: doc.data()['userPhone'],
+                date: myDate,
+                sortDate:  sortTime,
+                labels: ['data'],
+                completed: false
+              }
+
+            this.updateTask(aTask)
+
+          }else{
+
+        const aTask = {
+          id: doc.id+'data',
+          title: 'Delete Data',
+          description: doc.data()['userPhone'],
+          date: myDate,
+          sortDate:  sortTime,
+          labels: ['data'],
+          completed: false
+        }
+        console.log(aTask.sortDate)
+        this.addTask(aTask)
+        }
+      })
+    })
+
+
+    let refaccount= db.collection('requestedDeleteAccount')
+
+    refaccount.onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+
+
+
+        let doc = change.doc
+        var sortTime = doc.data()['date'].seconds*1000
+        var myDate = moment(sortTime).format('MMM Do YY')
+
+        console.log(change.type +'   '+doc.id+'account')
+
+        if (change.type=='removed'){
+
+          this.deleteTask(doc.id+'account')
+
+          }else if (change.type=='modified') {
+
+              const aTask = {
+                id: doc.id+'account',
+                title: 'Delete Account',
+                description: doc.data()['userPhone'],
+                date: myDate,
+                sortDate:  sortTime,
+                labels: ['account'],
+                completed: false
+              }
+
+            this.updateTask(aTask)
+
+          }else{
 
         const aTask = {
           id: doc.id+'account',
@@ -75,39 +146,65 @@ export default {
           labels: ['account'],
           completed: false
         }
-        tempHolder.push(aTask)
-
+        this.addTask(aTask)
+          }
       })
-    db.collection('requestedDeleteData').get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        console.log (doc.data())
-        const fbTask = doc.data()
-
-        fbTask.id = doc.id
-        this.tasks.push(fbTask)
-         var sortTime = doc.data()['date'].seconds*1000
-         var myDate = moment(sortTime).format('MMM Do YY')
-
-        const bTask = {
-          id: doc.id+'data',
-          title: 'Delete Data',
-          description: doc.data()['userPhone'],
-          date: myDate,
-          sortDate:  sortTime,
-          labels: ['data'],
-          completed: false
-        }
-        tempHolder.push(bTask)
-
-      })
-        tempHolder.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
-        for (var i=0; i<tempHolder.length; i++){
-          this.addTask(tempHolder[i])
-        }
     })
 
-    })
+    // db.collection('requestedDeleteAccount').get()
+    // .then((querySnapshot) => {
+      // querySnapshot.forEach((doc) => {
+      //   console.log (doc.data())
+      //   const fbTask = doc.data()
+
+      //   fbTask.id = doc.id
+      //   this.tasks.push(fbTask)
+      //    var sortTime = doc.data()['date'].seconds*1000
+      //    var myDate = moment(sortTime).format('MMM Do YY')
+
+      //   const aTask = {
+      //     id: doc.id+'account',
+      //     title: 'Delete Account',
+      //     description: doc.data()['userPhone'],
+      //     date: myDate,
+      //     sortDate:  sortTime,
+      //     labels: ['account'],
+      //     completed: false
+      //   }
+      //   tempHolder.push(aTask)
+      //   this.addTask(tempHolder[i])
+
+      // })
+    // db.collection('requestedDeleteData').get()
+    // .then((querySnapshot) => {
+    //   querySnapshot.forEach((doc) => {
+    //     console.log (doc.data())
+    //     const fbTask = doc.data()
+
+    //     fbTask.id = doc.id
+    //     this.tasks.push(fbTask)
+    //      var sortTime = doc.data()['date'].seconds*1000
+    //      var myDate = moment(sortTime).format('MMM Do YY')
+
+    //     const bTask = {
+    //       id: doc.id+'data',
+    //       title: 'Delete Data',
+    //       description: doc.data()['userPhone'],
+    //       date: myDate,
+    //       sortDate:  sortTime,
+    //       labels: ['data'],
+    //       completed: false
+    //     }
+    //     tempHolder.push(bTask)
+
+    //   })
+    //     tempHolder.sort((a, b) => (a.sortDate < b.sortDate) ? 1 : -1)
+    //     for (var i=0; i<tempHolder.length; i++){
+    //       this.addTask(tempHolder[i])
+    //     }
+    // })
+
+   // })
 
 
 
@@ -116,7 +213,7 @@ export default {
     //this.addTask(tempHolder)
   },
   methods: {
-    ...mapMutations('todo-app', ['updateTask', 'addTask', 'clearTasks']),
+    ...mapMutations('todo-app', ['updateTask', 'addTask', 'clearTasks', 'deleteTask']),
     openCompose(task) {
       this.$refs.compose.open(task)
     }

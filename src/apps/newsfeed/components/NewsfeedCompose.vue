@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" width="600">
     <v-card>
       <v-card-title class="pa-2">
-        {{ isEdit ? 'Edit News...' : 'Add News' }}
+        {{ isEdit ? "Edit News..." : "Add News" }}
         <v-spacer></v-spacer>
         <v-btn icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
@@ -13,42 +13,23 @@
 
       <!-- task form -->
 
-  <v-form
-    ref="form"
-    v-model="valid"
-    lazy-validation
-  >
-  <h2>Bhai Thamen News</h2>
+      <v-form ref="form" v-model="valid" lazy-validation>
+        <h2>Bhai Thamen News</h2>
 
-    <v-radio-group
-      v-model="postType"
-      row
-    >
-      <v-radio
-        label="Warning"
-        value="warn"
-      ></v-radio>
-      <v-radio
-        label="News"
-        value="news"
-      ></v-radio>
-      <v-radio
-        label="Info"
-        value="info"
-      ></v-radio>
-    </v-radio-group>
+        <v-radio-group v-model="postType" row>
+          <v-radio label="Warning" value="warn"></v-radio>
+          <v-radio label="News" value="news"></v-radio>
+          <v-radio label="Info" value="info"></v-radio>
+        </v-radio-group>
 
-    <v-text-field
-      v-model="title"
-      outlined
-      :counter="80"
-      :rules="titleRules"
-      label="Title"
-      required
-    ></v-text-field>
-
-
-
+        <v-text-field
+          v-model="title"
+          outlined
+          :counter="80"
+          :rules="titleRules"
+          label="Title"
+          required
+        ></v-text-field>
 
         <v-textarea
           v-model="article"
@@ -63,66 +44,71 @@
           required
         ></v-textarea>
 
+        <v-text-field
+          v-model="author"
+          outlined
+          :counter="40"
+          :rules="authorRules"
+          label="Author"
+          required
+        ></v-text-field>
+      </v-form>
 
+      <v-row v-if="imageUrl != ''">
+        <v-col class="d-flex child-flex" cols="3">
+          <v-img :src="imageUrl" aspect-ratio="1" class="grey lighten-2">
+            <span @click="deleteImage(imageUrl)"
+              ><v-icon left color="red" large class="pa-1"
+                >mdi-delete-circle</v-icon
+              ></span
+            >
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular
+                  indeterminate
+                  color="grey lighten-5"
+                ></v-progress-circular>
+              </v-row>
+            </template>
+          </v-img>
+        </v-col>
+      </v-row>
 
-    <v-text-field
-      v-model="author"
-      outlined
-      :counter="40"
-      :rules="authorRules"
-      label="Author"
-      required
-    ></v-text-field>
-
-     <v-file-input
-    v-model="files"
-    color="deep-purple accent-4"
-    counter
-    label="File input"
-    multiple
-    placeholder="Select your files"
-    prepend-icon="mdi-paperclip"
-    outlined
-    @change="imagePreview"
-    :show-size="1000"
-  >
-    <template v-slot:selection="{ index, text }">
-      <v-chip
-        v-if="index < 2"
-        color="deep-purple accent-4"
-        dark
-        label
-        small
-      >
-        {{ text }}
-      </v-chip>
-
-      <span
-        v-else-if="index === 2"
-        class="overline grey--text text--darken-3 mx-2"
-      >
-        +{{ files.length - 2 }} File(s)
-      </span>
-    </template>
-  </v-file-input>
-  <v-flex xs12 sm6 offset-sm3>
-    <img :src="imageUrl" height="150">
-
-  </v-flex>
-    </v-form>
       <v-divider></v-divider>
 
+      <vue-dropzone
+        v-if="imageUrl == ''"
+        id="imgDropzone"
+        ref="imgDropzone"
+        :options="dropzoneOptions"
+        @vdropzone-complete="afterComplete"
+        @vdropzone-processing="dzoneProcessing"
+      ></vue-dropzone>
+
       <v-card-actions class="pa-2">
-        <v-btn outlined @click="close">{{ $t('common.cancel') }}</v-btn>
+        <v-btn outlined @click="close">{{ $t("common.cancel") }}</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="post">{{ $t('common.save') }}</v-btn>
+        <!-- <v-btn color="primary" @click="post">{{ $t("common.save") }}</v-btn> -->
+
+        <v-btn
+          :loading="loading"
+          :disabled="loading"
+          color="blue"
+          class="ma-2 white--text"
+          @click="post"
+        >
+          Save Post
+          <v-icon right dark>
+            mdi-cloud-upload
+          </v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations } from "vuex";
 
 /*
 |---------------------------------------------------------------------
@@ -131,293 +117,380 @@ import { mapState, mapMutations } from 'vuex'
 |
 | Compose new tasks editor
 */
-import moment from 'moment'
-import { db } from '../../../main'
-import firebase from 'firebase'
+import moment from "moment";
+import { db } from "../../../main";
+import firebase from "firebase";
+import vue2Dropzone from "vue2-dropzone";
+import "vue2-dropzone/dist/vue2Dropzone.min.css";
 export default {
-  data () {
+  components: {
+    vueDropzone: vue2Dropzone
+  },
+  data() {
     return {
+      dropzoneOptions: {
+        url: "https://httpbin.org/post",
+        thumbnailWidth: 250,
+        thumbnailHeight: 250,
+        addRemoveLinks: true,
+        acceptedFiles: ".jpg, .jpeg, .png",
+        maxFiles: 1
+      },
+      loading: false,
       dialog: false,
-      title: '',
-      article: '',
-      time: '',
-      author: '',
-      likes:[],
-      shares:0,
-      events:[],
-      incidentDate:'',
-      foundEvents:[],
-      show:true,
-      iAmEditing:false,
+      title: "",
+      article: "",
+      time: "",
+      author: "",
+      likes: [],
+      shares: 0,
+      events: [],
+      incidentDate: "",
+      foundEvents: [],
+      show: true,
+      iAmEditing: false,
       taskLabels: [],
       search: null,
-      id:'',
+      id: "",
       valid: true,
-      files:[],
-      imageRaw:null,
-      receivedUrl:'',
-      imageUrl:'https://homepages.cae.wisc.edu/~ece533/images/airplane.png',
-      title: '',
-      sortDate:'',
-      article:'',
-      author:'',
-      postType:'warn',
+      files: [],
+      imageRaw: null,
+      receivedUrl: "",
+      image: "",
+      imageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
+      title: "",
+      completed: "",
+      sortDate: "",
+      article: "",
+      author: "",
+      postType: "warn",
       titleRules: [
-        (v) => !!v || 'Title is required',
-        (v) => (v && v.length <= 80) || 'Title must be less than 80 characters'
+        v => !!v || "Title is required",
+        v => (v && v.length <= 80) || "Title must be less than 80 characters"
       ],
       articleRules: [
-        (v) => !!v || 'Article text is required',
-        (v) => (v && v.length <= 6000) || 'Article must be less than 6000 characters'
+        v => !!v || "Article text is required",
+        v =>
+          (v && v.length <= 6000) || "Article must be less than 6000 characters"
       ],
       authorRules: [
-        (v) => !!v || 'Author name is required',
-        (v) => (v && v.length <= 40) || 'Name must be less than 40 characters'
+        v => !!v || "Author name is required",
+        v => (v && v.length <= 40) || "Name must be less than 40 characters"
       ],
-      email: '',
+      email: "",
       emailRules: [
-        (v) => !!v || 'E-mail is required',
-        (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+        v => !!v || "E-mail is required",
+        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
       ],
       select: null,
-      items: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4'
-      ],
+      items: ["Item 1", "Item 2", "Item 3", "Item 4"],
       checkbox: false,
-      imageChanged:false
-
-    }
+      imageChanged: false
+    };
   },
   computed: {
-    ...mapState('newsfeed-app', ['newsfeedlabels']),
+    ...mapState("newsfeed-app", ["newsfeedlabels"]),
     isEdit() {
-      if (this.id!=null){
-        console.log(this.id)
-        if (this.id==''){
-          return false
-        }else{
-          return true
+      if (this.id != null) {
+        console.log(this.id);
+        if (this.id == "") {
+          return false;
+        } else {
+          return true;
         }
       }
-
     }
   },
   methods: {
-    ...mapMutations('newsfeed-app', ['updateNewsfeed', 'addNewsfeed']),
+    ...mapMutations("newsfeed-app", ["updateNewsfeed", "addNewsfeed"]),
     open(task, editing) {
-      console.log('OPEN')
+      console.log("OPEN");
       if (task) {
-        this.task = task
-        this.iAmEditing = true
-        this.id = this.task.id
-        this.author = this.task.author
-        this.title = this.task.title
-        this.article = this.task.article
-        this.time = this.task.time
-        this.image = this.task.image
-        this.taskLabels = this.task.labels
-        this.likes = this.task.likes
-        this.shares = this.task.shares
-        this.postType = this.task.labels[0]
-        this.imageUrl = this.task.image
-        this.files.push('saved')
-        this.show = this.task.show
-        this.sortDate = this.task.sortDate
+        this.task = task;
+        this.iAmEditing = true;
+        this.id = this.task.id;
+        this.completed = this.task.completed;
+        this.author = this.task.author;
+        this.title = this.task.title;
+        this.article = this.task.article;
+        this.time = this.task.time;
+        this.image = this.task.image;
+        this.taskLabels = this.task.labels;
+        this.likes = this.task.likes;
+        this.shares = this.task.shares;
+        this.postType = this.task.labels[0];
+        this.imageUrl = this.task.image;
+        this.files.push("saved");
+        this.show = this.task.show;
+        this.sortDate = this.task.sortDate;
       } else {
-        this.iAmEditing = false
-        this.id = ''
-        this.task = {}
-        this.author = ''
-        this.title = ''
-        this.article = ''
-        this.time = ''
-        this.image = ''
-        this.taskLabels = []
-        this.likes = []
-        this.shares = 0
-        this.postType = 'news'
-        this.imageUrl = ''
-        this.show = true
+        this.iAmEditing = false;
+        this.id = "";
+        this.task = {};
+        this.author = "";
+        this.title = "";
+        this.article = "";
+        this.time = "";
+        this.image = "";
+        this.taskLabels = [];
+        this.likes = [];
+        this.shares = 0;
+        this.completed = false;
+        this.postType = "news";
+        this.imageUrl = "";
+        this.show = true;
       }
 
-      this.dialog = true
+      this.dialog = true;
     },
     close() {
-      this.dialog = false
+      this.dialog = false;
     },
     save() {
-      const { title, article, taskLabels, author, imageUrl, show, id, time, sortDate } = this
+      const {
+        title,
+        article,
+        taskLabels,
+        completed,
+        author,
+        imageUrl,
+        show,
+        id,
+        time,
+        sortDate
+      } = this;
       const taskEdit = {
         title,
         article,
         author,
+        completed,
         image: imageUrl,
         labels: taskLabels,
         show
-      }
+      };
 
       if (this.iAmEditing == true) {
         this.updateNewsfeed({
           ...this.task,
           ...taskEdit
-        })
+        });
+        this.imageChanged = false;
       } else {
-        console.log ('PASS URL '+sortDate)
+        console.log("PASS URL " + sortDate);
         const taskNew = {
-        sortDate,
-        id,
-        title,
-        article,
-        author,
-        time,
-        image: imageUrl,
-        labels: taskLabels,
-        likes:[],
-        shares:0,
-        show
-      }
-        this.addNewsfeed(taskNew)
+          sortDate,
+          id,
+          title,
+          article,
+          completed,
+          author,
+          time,
+          image: imageUrl,
+          labels: taskLabels,
+          likes: [],
+          shares: 0,
+          show
+        };
+        this.imageChanged = false;
+        this.addNewsfeed(taskNew);
       }
 
-      this.close()
+      this.close();
     },
-    filter (item, queryText, itemText) {
-      const hasValue = (val) => val !== null ? val : ''
+    filter(item, queryText, itemText) {
+      const hasValue = val => (val !== null ? val : "");
 
-      const text = hasValue(item.title)
-      const query = hasValue(queryText)
+      const text = hasValue(item.title);
+      const query = hasValue(queryText);
 
-      return text.toString()
-        .toLowerCase()
-        .indexOf(query.toString().toLowerCase()) > -1
+      return (
+        text
+          .toString()
+          .toLowerCase()
+          .indexOf(query.toString().toLowerCase()) > -1
+      );
     },
 
+    async post() {
+      if (this.valid == true) {
+        if (this.iAmEditing == false) {
+          const unix = Date.now();
 
-    async post () {
+          this.sortDate = unix;
 
-      if (this.iAmEditing==false){
-      const unix = Date.now()
+          this.id = this.sortDate.toString();
 
-      this.sortDate = unix
+          const theDate = moment(unix).format("Do MMM YY");
 
-      this.id = this.sortDate.toString()
+          this.time = firebase.firestore.Timestamp.fromDate(new Date());
 
-      const theDate = moment(unix).format('Do MMM YY')
+          this.taskLabels = [];
+          this.taskLabels.push(this.postType);
+        } else {
+          this.taskLabels = [];
+          this.taskLabels.push(this.postType);
 
-      this.time = firebase.firestore.Timestamp.fromDate(new Date())
+          console.log("doc id " + this.id);
+        }
 
-      this.taskLabels=[]
-      this.taskLabels.push(this.postType)
+        if (this.imageChanged) {
+          this.loading = true;
+          this.image = this.$refs.imgDropzone.getAcceptedFiles();
+          console.log(this.image);
+          const imgName = this.image[0].name;
 
-      }else{
+          const ext = imgName.slice(imgName.lastIndexOf("."));
 
-        this.taskLabels=[]
-        this.taskLabels.push(this.postType)
+          const uniqueTime = new Date().getTime();
 
-        console.log('doc id '+this.id)
-      }
-
-      if (this.imageChanged){
-
-
-
-      const imgName = this.image.name
-
-      const ext = imgName.slice(imgName.lastIndexOf('.'))
-
-      const uniqueTime = new Date().getTime()
-
-
-      const storageRef=firebase.storage().ref(`newsfeed/${this.id}${uniqueTime}${ext}`).put(this.image);
-        storageRef.on(`state_changed`,snapshot=>{
-        this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
-          }, error=>{console.log(error.message)},
-        ()=>{this.uploadValue=100;
-            storageRef.snapshot.ref.getDownloadURL().then((url)=>{
+          const storageRef = firebase
+            .storage()
+            .ref(`newsfeed/${this.id}${uniqueTime}${ext}`)
+            .put(this.image[0]);
+          storageRef.on(
+            `state_changed`,
+            snapshot => {
+              this.uploadValue =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            error => {
+              console.log(error.message);
+            },
+            () => {
+              this.uploadValue = 100;
+              storageRef.snapshot.ref.getDownloadURL().then(url => {
                 this.imageUrl = url;
-                console.log(this.id)
-                console.log(this.taskLabels[0])
-                console.log(this.title)
-                console.log(this.article)
-                console.log(this.time)
-                console.log(this.author)
-                console.log(this.imageUrl)
-                console.log(this.likes)
-                console.log(this.shares)
-                console.log(this.show)
+                console.log(this.id);
+                console.log(this.taskLabels[0]);
+                console.log(this.title);
+                console.log(this.article);
+                console.log(this.time);
+                console.log(this.author);
+                console.log(this.imageUrl);
+                console.log(this.likes);
+                console.log(this.shares);
+                console.log(this.show);
 
-                db
-                .collection('newsfeed')
-                .doc(this.id)
-                .set({
-                  cat: this.taskLabels[0],
-                  title: this.title,
-                  article: this.article,
-                  time: this.time,
-                  author: this.author,
-                  image: this.imageUrl,
-                  likes:this.likes,
-                  shares:this.shares,
-                  show:this.show
-              })
-              this.save()
+                db.collection("newsfeed")
+                  .doc(this.id)
+                  .set({
+                    cat: this.taskLabels[0],
+                    title: this.title,
+                    article: this.article,
+                    time: this.time,
+                    author: this.author,
+                    image: this.imageUrl,
+                    likes: this.likes,
+                    shares: this.shares,
+                    show: this.show
+                  });
+                if (this.$refs.imgDropzone) {
+                  this.$refs.imgDropzone.removeAllFiles();
+                }
+                this.loading = false;
+                this.save();
               });
             }
           );
-
-      } else {
-
-          db
-          .collection('newsfeed')
-          .doc(this.id)
-          .set({
-            cat: this.taskLabels[0],
-            title: this.title,
-            article: this.article,
-            time: this.time,
-            author: this.author,
-            image: this.image,
-            likes:this.likes,
-            shares:this.shares,
-            show:this.show
-
-      }).then((done)=>{
-                this.save()
-              })
+        } else {
+          this.loading = true;
+          db.collection("newsfeed")
+            .doc(this.id)
+            .set({
+              cat: this.taskLabels[0],
+              title: this.title,
+              article: this.article,
+              time: this.time,
+              author: this.author,
+              image: this.imageUrl,
+              likes: this.likes,
+              shares: this.shares,
+              show: this.show
+            })
+            .then(done => {
+              if (this.$refs.imgDropzone) {
+                this.$refs.imgDropzone.removeAllFiles();
+              }
+              this.loading = false;
+              this.save();
+            });
+        }
       }
-
     },
     imagePreview() {
-      const fileReader = new FileReader()
+      const fileReader = new FileReader();
 
-      if (this.files.length>0){
-
-      fileReader.addEventListener('load',() => {
-        this.imageUrl = fileReader.result
-      })
-      fileReader.readAsDataURL(this.files[0])
-      this.image = this.files[0]
-      this.imageChanged = true
-      }else{
-        this.image=''
-        this.imageUrl=''
-        this.imageChanged = false
+      if (this.files.length > 0) {
+        fileReader.addEventListener("load", () => {
+          this.imageUrl = fileReader.result;
+        });
+        fileReader.readAsDataURL(this.files[0]);
+        this.image = this.files[0];
+        this.imageChanged = true;
+      } else {
+        this.image = "";
+        this.imageUrl = "";
+        this.imageChanged = false;
       }
+    },
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    async dzoneProcessing(file) {
+      this.loading = true;
+    },
+    deleteImage(img) {
+      console.log(img);
 
+      let myimage = firebase.storage().refFromURL(img);
 
+      db.collection("newsfeed")
+        .doc(this.id)
+        .update({
+          image: ""
+        });
+
+      if (this.imageChanged) {
+        if (this.$refs.imgDropzone) {
+          this.$refs.imgDropzone.removeAllFiles();
+        }
+      }
+      this.imageUrl = "";
+
+      myimage
+        .delete()
+        .then(function() {
+          console.log("image deleted");
+        })
+        .catch(function(error) {
+          // Uh-oh, an error occurred!
+          console.log("an error occurred");
+        });
     },
-    validate () {
-      this.$refs.form.validate()
-    },
-    reset () {
-      this.$refs.form.reset()
-    },
-    resetValidation () {
-      this.$refs.form.resetValidation()
+    async afterComplete(file) {
+      try {
+        //const imageName = uuid.v1();
+        var metaData = {
+          contentType: "image/png"
+        };
+
+        //this.image = this.$refs.imgDropzone.getAcceptedFiles()
+
+        this.imageChanged = true;
+
+        this.loading = false;
+
+        console.log("image done");
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
-}
+};
 </script>

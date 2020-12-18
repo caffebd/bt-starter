@@ -13,7 +13,7 @@ export default {
     id: 'news',
     title: 'News',
     color: 'green'
-  },{
+  }, {
     id: 'info',
     title: 'Info',
     color: 'orange'

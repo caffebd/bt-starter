@@ -49,6 +49,7 @@ export default {
     completed: 'Completed',
     labels: 'Labels'
   },
+
   appfeedback: {
     addTask: 'Add Task',
     feedback: 'Feedback',
@@ -64,6 +65,12 @@ export default {
   appnewsfeed: {
     addTask: 'Add News',
     newsfeed: 'News',
+    completed: 'Completed',
+    labels: 'Labels'
+  },
+  appsafeplaces: {
+    addTask: 'Add Place',
+    safeplaces: 'Places',
     completed: 'Completed',
     labels: 'Labels'
   },
@@ -182,6 +189,7 @@ export default {
     appActions: 'Events',
     mapspage: 'Maps',
     formspage: 'News Entry',
+    placespage: 'Places',
     pages: 'Pages',
     others: 'Others',
     email: 'Email',

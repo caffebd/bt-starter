@@ -75,14 +75,14 @@
                 ></v-text-field>
 
                 <v-text-field
-                  v-model="location.latitude"
+                  v-model="latitude"
                   outlined
                   label="Latitude"
                   required
                 ></v-text-field>
 
                 <v-text-field
-                  v-model="location.longitude"
+                  v-model="longitude"
                   outlined
                   label="Longitude"
                   required
@@ -178,11 +178,6 @@
                   cols="4"
                 >
                   <v-img :src="anImage" aspect-ratio="1" class="grey lighten-2">
-                    <span @click="deleteImage(anImage)"
-                      ><v-icon left color="red" large class="pa-1"
-                        >mdi-delete-circle</v-icon
-                      ></span
-                    >
                     <template v-slot:placeholder>
                       <v-row
                         class="fill-height ma-0"
@@ -248,6 +243,7 @@ import { db } from "../../../main";
 import firebase from "firebase";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
+import S3 from "aws-s3";
 export default {
   components: {
     vueDropzone: vue2Dropzone,
@@ -260,7 +256,15 @@ export default {
         thumbnailHeight: 250,
         addRemoveLinks: true,
         acceptedFiles: ".jpg, .jpeg, .png",
-        maxFiles: 1,
+        maxFiles: 4,
+      },
+      awsConfig: {
+        bucketName: "bt-safeplaces",
+        dirName: "photos" /* optional */,
+        region: "ap-southeast-1",
+        accessKeyId: "AKIAJGQRSYMP6KK5TAGQ",
+        secretAccessKey: "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",
+        s3Url: "" /* optional */,
       },
       selectedPrice: "",
       priceTypes: [
@@ -289,6 +293,8 @@ export default {
       locationDescBN: "",
       locationDescEN: "",
       location: "",
+      latitude: "",
+      longitude: "",
       typeEN: "",
       typeBN: "",
       time: "",
@@ -386,13 +392,29 @@ export default {
         this.typeEN = this.task.typeEN;
         this.typeBN = this.task.typeBN;
         this.location = this.task.location;
+        this.latitude = this.task.location.latitude;
+        this.longitude = this.task.location.longitude;
         this.time = this.task.time;
         this.imageUrls = this.task.images;
         this.taskLabels = this.task.labels;
         this.postType = this.task.labels[0];
+        this.selectedPrice = this.task.price;
         this.files.push("saved");
         this.show = this.task.show;
         this.sortDate = this.task.sortDate;
+
+        for (var i = 0; i < this.task.facilitiesEN.length; i++) {
+          if (i == 0) this.facilitytextFieldsEN = [];
+          this.facilitytextFieldsEN.push({
+            value: this.task.facilitiesEN[i],
+          });
+        }
+        for (var k = 0; k < this.task.facilitiesBN.length; k++) {
+          if (k == 0) this.facilitytextFieldsBN = [];
+          this.facilitytextFieldsBN.push({
+            value: this.task.facilitiesBN[k],
+          });
+        }
       } else {
         this.iAmEditing = false;
         this.id = "";
@@ -401,6 +423,9 @@ export default {
         this.nameBN = "";
         this.locationDescBN = "";
         this.locationDescEN = "";
+        this.facilitiesBN = [];
+        this.facilitiesEN = [];
+        this.selectedPrice = "";
         this.detailsEN = "";
         this.detailsBN = "";
         this.social = "";
@@ -409,6 +434,8 @@ export default {
         this.typeEN = "";
         this.typeBN = "";
         this.location = "";
+        this.latitude = "";
+        this.longitude = "";
         this.time = "";
         this.imageUrls = [];
         this.taskLabels = [];
@@ -440,6 +467,8 @@ export default {
         detailsBN,
         selectedPrice,
         facilitytextFields,
+        facilitiesEN,
+        facilitiesBN,
         imageUrls,
         show,
         id,
@@ -460,8 +489,10 @@ export default {
         detailsEN,
         detailsBN,
         selectedPrice,
-        facilitytextFields,
+        facilitiesEN,
+        facilitiesBN,
         show,
+        imageUrls,
         id,
         time,
         sortDate,
@@ -471,7 +502,7 @@ export default {
       };
 
       if (this.iAmEditing == true) {
-        this.updateNewsfeed({
+        this.updateSafeplaces({
           ...this.task,
           ...taskEdit,
         });
@@ -492,8 +523,10 @@ export default {
           detailsEN,
           detailsBN,
           selectedPrice,
-          facilitytextFields,
+          facilitiesEN,
+          facilitiesBN,
           show,
+          imageUrls,
           id,
           time,
           sortDate,
@@ -519,6 +552,19 @@ export default {
       );
     },
 
+    async awsUpload() {
+      const S3Client = new S3(this.awsConfig);
+
+      console.log("DO UPLAOD");
+      var file = this.$refs.imgDropzone.getAcceptedFiles();
+
+      console.log(file);
+
+      S3Client.uploadFile(file[0], "testFile")
+        .then((data) => console.log(data))
+        .catch((err) => console.error(err));
+    },
+
     async post() {
       if (this.valid == true) {
         if (this.iAmEditing == false) {
@@ -530,93 +576,159 @@ export default {
 
           this.time = firebase.firestore.Timestamp.fromDate(new Date());
 
+          const uniqueTime = new Date();
+
+          this.location = new firebase.firestore.GeoPoint(
+            this.latitude,
+            this.longitude
+          );
+
           this.taskLabels = [];
           this.taskLabels.push(this.postType);
         } else {
+          this.location = new firebase.firestore.GeoPoint(
+            this.latitude,
+            this.longitude
+          );
           this.taskLabels = [];
           this.taskLabels.push(this.postType);
 
           console.log("doc id " + this.id);
         }
 
-        const uniqueTime = new Date().getTime();
+        const uniqueTime = new Date();
+
+        var fieldsEN = [];
+        var fieldsBN = [];
+
+        for (var q = 0; q < this.facilitytextFieldsEN.length; q++) {
+          fieldsEN.push(this.facilitytextFieldsEN[q].value);
+        }
+
+        for (var r = 0; r < this.facilitytextFieldsBN.length; r++) {
+          fieldsBN.push(this.facilitytextFieldsBN[r].value);
+        }
 
         if (this.imageChanged) {
           this.loading = true;
-          this.image = this.$refs.imgDropzone.getAcceptedFiles();
-          console.log(this.image);
-          const imgName = this.image[0].name;
 
-          const ext = imgName.slice(imgName.lastIndexOf("."));
+          this.images = this.$refs.imgDropzone.getAcceptedFiles();
 
-          const uniqueTime = new Date().getTime();
+          let photoDone = 0;
 
-          const storageRef = firebase
-            .storage()
-            .ref(`safeplaces/${this.postType}${uniqueTime}${ext}`)
-            .put(this.image[0]);
-          storageRef.on(
-            `state_changed`,
-            (snapshot) => {
-              this.uploadValue =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-              console.log(error.message);
-            },
-            () => {
-              this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL().then((url) => {
-                this.imageUrl = url;
-                console.log(this.id);
-                console.log(this.taskLabels[0]);
-                console.log(this.nameEN);
-                console.log(this.nameBN);
-                console.log(this.locationDescBN);
-                console.log(this.locationDescEN);
-                console.log(this.imageUrls);
-                console.log(this.location);
-                console.log(this.type);
-                console.log(this.phone);
-                console.log(this.website);
-                console.log(this.social);
-                console.log(this.detailsEN);
-                console.log(this.detailsBN);
-                console.log(this.selectedPrice);
-                console.log(this.facilitytextFields);
+          const imgName = this.images[0].name;
 
-                db.collection("safeplaces")
-                  .doc("dhaka")
-                  .collection(this.postType)
-                  .doc()
-                  .set({
-                    nameBN: this.nameBN,
-                    nameEN: this.nameEN,
-                    phone: this.phone,
-                    price: this.selectedPrice,
-                    raters: 0,
-                    rating: 0,
-                    reports: [],
-                    social: this.social,
-                    time: uniqueTime,
-                    typeBN: this.typeBN,
-                    typeEN: this.typeEN,
-                    website: this.website,
-                    completed: false,
-                    detailsEN: this.detailsEN,
-                    detailsBN: this.detailsBN,
-                    facilitiesBN: this.facilitytextFields,
-                    facilitiesEN: this.facilitytextFields,
-                    show: true,
-                  });
-                if (this.$refs.imgDropzone) {
-                  this.$refs.imgDropzone.removeAllFiles();
+          var fieldsEN = [];
+          var fieldsBN = [];
+
+          for (var q = 0; q < this.facilitytextFieldsEN.length; q++) {
+            fieldsEN.push(this.facilitytextFieldsEN[q].value);
+          }
+
+          for (var r = 0; r < this.facilitytextFieldsBN.length; r++) {
+            fieldsBN.push(this.facilitytextFieldsBN[r].value);
+          }
+
+          //const ext = imgName.slice(imgName.lastIndexOf("."));
+
+          const uniqueTime = new Date();
+
+          const S3Client = new S3(this.awsConfig);
+
+          for (var i = 0; i < this.images.length; i++) {
+            this.loading = true;
+            var nameTime = new Date().getTime();
+
+            let imgName = this.images[i].name.slice(0, -4) + nameTime;
+
+            S3Client.uploadFile(this.images[i], imgName)
+              .then((data) => {
+                console.log(data.location);
+                photoDone++;
+                this.imageUrls.push(data.location);
+
+                if (photoDone == this.images.length) {
+                  if (this.iAmEditing) {
+                    this.loading = true;
+                    db.collection("safeplaces")
+                      .doc("dhaka")
+                      .collection(this.postType)
+                      .doc(this.id)
+                      .update({
+                        nameBN: this.nameBN,
+                        nameEN: this.nameEN,
+                        phone: this.phone,
+                        category: this.postType,
+                        locationDescEN: this.locationDescEN,
+                        locationDescBN: this.locationDescBN,
+                        price: this.selectedPrice,
+                        location: this.location,
+                        images: this.imageUrls,
+                        raters: 0,
+                        rating: 0,
+                        reports: [],
+                        social: this.social,
+                        time: uniqueTime,
+                        typeBN: this.typeBN,
+                        typeEN: this.typeEN,
+                        website: this.website,
+                        completed: false,
+                        detailsEN: this.detailsEN,
+                        detailsBN: this.detailsBN,
+                        facilitiesBN: fieldsBN,
+                        facilitiesEN: fieldsEN,
+                        show: true,
+                      })
+                      .then((done) => {
+                        if (this.$refs.imgDropzone) {
+                          this.$refs.imgDropzone.removeAllFiles();
+                        }
+                        this.loading = false;
+                        this.save();
+                      });
+                  } else {
+                    this.loading = true;
+                    db.collection("safeplaces")
+                      .doc("dhaka")
+                      .collection(this.postType)
+                      .doc()
+                      .set({
+                        nameBN: this.nameBN,
+                        nameEN: this.nameEN,
+                        phone: this.phone,
+                        locationDescEN: this.locationDescEN,
+                        locationDescBN: this.locationDescBN,
+                        category: this.postType,
+                        price: this.selectedPrice,
+                        location: this.location,
+                        images: this.imageUrls,
+                        raters: 0,
+                        rating: 0,
+                        reports: [],
+                        social: this.social,
+                        time: uniqueTime,
+                        typeBN: this.typeBN,
+                        typeEN: this.typeEN,
+                        website: this.website,
+                        completed: false,
+                        detailsEN: this.detailsEN,
+                        detailsBN: this.detailsBN,
+                        facilitiesBN: fieldsBN,
+                        facilitiesEN: fieldsEN,
+                        show: true,
+                      })
+                      .then((done) => {
+                        if (this.$refs.imgDropzone) {
+                          this.$refs.imgDropzone.removeAllFiles();
+                        }
+                        this.loading = false;
+                        this.save();
+                      });
+                  }
                 }
-                this.loading = false;
-                this.save();
-              });
-            }
-          );
+              })
+              .catch((err) => console.error(err));
+          }
         } else {
           if (this.iAmEditing) {
             this.loading = true;
@@ -628,7 +740,12 @@ export default {
                 nameBN: this.nameBN,
                 nameEN: this.nameEN,
                 phone: this.phone,
+                locationDescEN: this.locationDescEN,
+                locationDescBN: this.locationDescBN,
+                category: this.postType,
                 price: this.selectedPrice,
+                location: this.location,
+                images: this.imageUrls,
                 raters: 0,
                 rating: 0,
                 reports: [],
@@ -640,8 +757,8 @@ export default {
                 completed: false,
                 detailsEN: this.detailsEN,
                 detailsBN: this.detailsBN,
-                facilitiesBN: this.facilitytextFields,
-                facilitiesEN: this.facilitytextFields,
+                facilitiesBN: fieldsBN,
+                facilitiesEN: fieldsEN,
                 show: true,
               })
               .then((done) => {
@@ -661,7 +778,12 @@ export default {
                 nameBN: this.nameBN,
                 nameEN: this.nameEN,
                 phone: this.phone,
+                locationDescEN: this.locationDescEN,
+                locationDescBN: this.locationDescBN,
+                category: this.postType,
                 price: this.selectedPrice,
+                location: this.location,
+                images: this.imageUrls,
                 raters: 0,
                 rating: 0,
                 reports: [],
@@ -673,8 +795,8 @@ export default {
                 completed: false,
                 detailsEN: this.detailsEN,
                 detailsBN: this.detailsBN,
-                facilitiesBN: this.facilitytextFieldsBN,
-                facilitiesEN: this.facilitytextFieldsEN,
+                facilitiesBN: fieldsBN,
+                facilitiesEN: fieldsEN,
                 show: true,
               })
               .then((done) => {
@@ -717,30 +839,23 @@ export default {
       this.loading = true;
     },
     deleteImage(img) {
-      console.log(img);
+      var ind = this.imageUrls.indexOf(img);
 
-      let myimage = firebase.storage().refFromURL(img);
+      this.imageUrls.splice(ind, 1);
 
-      db.collection("safeplaces").doc(this.id).update({
-        image: "",
-      });
+      // db.collection("safeplaces")
+      //   .doc("dhaka")
+      //   .collection(this.postType)
+      //   .doc(this.id)
+      //   .update({
+      //     images: this.imageUrls,
+      //   });
 
-      if (this.imageChanged) {
-        if (this.$refs.imgDropzone) {
-          this.$refs.imgDropzone.removeAllFiles();
-        }
-      }
-      this.imageUrl = "";
+      const S3Client = new S3(this.awsConfig);
 
-      myimage
-        .delete()
-        .then(function () {
-          console.log("image deleted");
-        })
-        .catch(function (error) {
-          // Uh-oh, an error occurred!
-          console.log("an error occurred");
-        });
+      S3Client.deleteFile("16083625622084815432130068122771608403377328.jpeg")
+        .then((response) => console.log(response))
+        .catch((err) => console.error(err));
     },
     async afterComplete(file) {
       try {

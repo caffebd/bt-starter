@@ -64,10 +64,14 @@ export default {
     var tempHolder = [];
     this.clearSafeplaces();
     this.$store.state.user.viewingAlerts = false;
-    db.collection("safeplaces")
-      .doc("dhaka")
-      .collection("medical")
-      .onSnapshot((snapshot) => {
+
+    let allTheItems = [
+      db.collection("safeplaces").doc("dhaka").collection("shop"),
+      db.collection("safeplaces").doc("dhaka").collection("pharmacy"),
+    ];
+
+    for (var a = 0; a < allTheItems.length; a++) {
+      allTheItems[a].onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           let doc = change.doc;
 
@@ -110,7 +114,7 @@ export default {
               location: doc.data()["location"],
               completed: doc.data()["completed"] ?? false,
             };
-            this.updateSafeplacesfeed(aTask);
+            this.updateSafeplaces(aTask);
           } else {
             const aTask = {
               sortDate: sortTime,
@@ -148,7 +152,7 @@ export default {
         //   this.addNewsfeed(tempHolder[i]);
         // }
       });
-
+    }
     //this.addTask(tempHolder)
   },
   methods: {

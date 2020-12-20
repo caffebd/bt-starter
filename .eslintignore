@@ -18,7 +18,10 @@ FeedbackApp.vue
 NewsFormPage.vue
 NewsfeedApp.vue
 SafeplacesApp.vue
+SafeplacesMenu.vue
+SafeplacesList.vue
 SafeplacesCompose.vue
+SafeplacesCompletedPage.vue
 SafeplacesTasksPage.vue
 SafeplacesLabelPage.vue
 NewsfeedCompose.vue

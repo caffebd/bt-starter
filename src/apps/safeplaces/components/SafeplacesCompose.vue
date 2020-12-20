@@ -258,14 +258,7 @@ export default {
         acceptedFiles: ".jpg, .jpeg, .png",
         maxFiles: 4,
       },
-      awsConfig: {
-        bucketName: "bt-safeplaces",
-        dirName: "photos" /* optional */,
-        region: "ap-southeast-1",
-        accessKeyId: "AKIAIEEFXBFUJZJ56WFA",
-        secretAccessKey: "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",
-        s3Url: "" /* optional */,
-      },
+      awsConfig: {},
       selectedPrice: "",
       priceTypes: [
         "Free",

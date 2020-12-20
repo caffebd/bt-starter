@@ -52,20 +52,20 @@ import moment from "moment";
 export default {
   components: {
     NewsfeedMenu,
-    NewsfeedCompose
+    NewsfeedCompose,
   },
   data() {
     return {
       drawer: null,
-      newsfeed: []
+      newsfeed: [],
     };
   },
   created() {
     var tempHolder = [];
     this.clearNewsfeed();
     this.$store.state.user.viewingAlerts = false;
-    db.collection("newsfeed").onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
+    db.collection("newsfeed").onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
         let doc = change.doc;
 
         console.log(doc.data()["title"]);
@@ -79,7 +79,7 @@ export default {
 
         if (change.type == "removed") {
           const dTask = {
-            id: doc.id
+            id: doc.id,
           };
 
           this.deleteNewsfeedRemote(dTask);
@@ -96,9 +96,9 @@ export default {
             time: doc.data()["time"],
             category: doc.data()["cat"],
             labels: [doc.data()["cat"]],
-            image: doc.data()["image"],
+            images: doc.data()["images"],
             show: doc.data()["show"],
-            completed: doc.data()["completed"] ?? false
+            completed: doc.data()["completed"] ?? false,
           };
           this.updateNewsfeed(aTask);
         } else {
@@ -114,9 +114,9 @@ export default {
             time: doc.data()["time"],
             category: doc.data()["cat"],
             labels: [doc.data()["cat"]],
-            image: doc.data()["image"],
+            images: doc.data()["images"],
             show: doc.data()["show"],
-            completed: doc.data()["completed"] ?? false
+            completed: doc.data()["completed"] ?? false,
           };
           this.addNewsfeed(aTask);
         }
@@ -136,14 +136,14 @@ export default {
       "updateNewsfeed",
       "addNewsfeed",
       "clearNewsfeed",
-      "deleteNewsfeedRemote"
+      "deleteNewsfeedRemote",
     ]),
     openCompose(newsfeed) {
       this.$refs.compose.open(newsfeed);
     },
     newsfeedAdding() {
       this.addNewsfeed(newsfeed);
-    }
-  }
+    },
+  },
 };
 </script>

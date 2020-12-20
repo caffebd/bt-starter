@@ -16,7 +16,7 @@ export default {
       { icon: 'mdi-comment-edit-outline', key: 'menu.appFeedback', text: 'Feedback Page', link: '/apps/feedback' },
       { icon: 'mdi-clipboard-account-outline', key: 'menu.appReports', text: 'Reports Page', link: '/apps/reports' },
       { icon: 'mdi-newspaper-variant-outline', key: 'menu.formspage', text: 'News Pages Bottom', link: '/apps/newsfeed' },
-      { icon: 'mdi-newspaper-variant-outline', key: 'menu.placespage', text: 'Places Pages Bottom', link: '/apps/safeplaces' }
+      { icon: 'mdi-map-legend', key: 'menu.placespage', text: 'Places Pages Bottom', link: '/apps/safeplaces' }
     ]
   }],
 

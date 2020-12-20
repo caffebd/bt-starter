@@ -54,10 +54,15 @@
         ></v-text-field>
       </v-form>
 
-      <v-row v-if="imageUrl != ''">
-        <v-col class="d-flex child-flex" cols="3">
-          <v-img :src="imageUrl" aspect-ratio="1" class="grey lighten-2">
-            <span @click="deleteImage(imageUrl)"
+      <v-row>
+        <v-col
+          v-for="anImage in imageUrls"
+          v-bind:key="anImage.id"
+          class="d-flex child-flex mt-4 md-3 xs-6"
+          cols="6"
+        >
+          <v-img :src="anImage" aspect-ratio="1" class="grey lighten-2">
+            <span @click="deleteImage(anImage)"
               ><v-icon left color="red" large class="pa-1"
                 >mdi-delete-circle</v-icon
               ></span
@@ -77,7 +82,6 @@
       <v-divider></v-divider>
 
       <vue-dropzone
-        v-if="imageUrl == ''"
         id="imgDropzone"
         ref="imgDropzone"
         :options="dropzoneOptions"
@@ -98,9 +102,7 @@
           @click="post"
         >
           Save Post
-          <v-icon right dark>
-            mdi-cloud-upload
-          </v-icon>
+          <v-icon right dark> mdi-cloud-upload </v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -124,7 +126,7 @@ import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
 export default {
   components: {
-    vueDropzone: vue2Dropzone
+    vueDropzone: vue2Dropzone,
   },
   data() {
     return {
@@ -134,7 +136,7 @@ export default {
         thumbnailHeight: 250,
         addRemoveLinks: true,
         acceptedFiles: ".jpg, .jpeg, .png",
-        maxFiles: 1
+        maxFiles: 3,
       },
       loading: false,
       dialog: false,
@@ -157,7 +159,7 @@ export default {
       imageRaw: null,
       receivedUrl: "",
       image: "",
-      imageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
+      imageUrls: [],
       title: "",
       completed: "",
       sortDate: "",
@@ -165,27 +167,28 @@ export default {
       author: "",
       postType: "warn",
       titleRules: [
-        v => !!v || "Title is required",
-        v => (v && v.length <= 80) || "Title must be less than 80 characters"
+        (v) => !!v || "Title is required",
+        (v) => (v && v.length <= 80) || "Title must be less than 80 characters",
       ],
       articleRules: [
-        v => !!v || "Article text is required",
-        v =>
-          (v && v.length <= 6000) || "Article must be less than 6000 characters"
+        (v) => !!v || "Article text is required",
+        (v) =>
+          (v && v.length <= 6000) ||
+          "Article must be less than 6000 characters",
       ],
       authorRules: [
-        v => !!v || "Author name is required",
-        v => (v && v.length <= 40) || "Name must be less than 40 characters"
+        (v) => !!v || "Author name is required",
+        (v) => (v && v.length <= 40) || "Name must be less than 40 characters",
       ],
       email: "",
       emailRules: [
-        v => !!v || "E-mail is required",
-        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+        (v) => !!v || "E-mail is required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
       select: null,
       items: ["Item 1", "Item 2", "Item 3", "Item 4"],
       checkbox: false,
-      imageChanged: false
+      imageChanged: false,
     };
   },
   computed: {
@@ -199,7 +202,7 @@ export default {
           return true;
         }
       }
-    }
+    },
   },
   methods: {
     ...mapMutations("newsfeed-app", ["updateNewsfeed", "addNewsfeed"]),
@@ -219,7 +222,7 @@ export default {
         this.likes = this.task.likes;
         this.shares = this.task.shares;
         this.postType = this.task.labels[0];
-        this.imageUrl = this.task.image;
+        this.imageUrls = this.task.images;
         this.files.push("saved");
         this.show = this.task.show;
         this.sortDate = this.task.sortDate;
@@ -237,7 +240,7 @@ export default {
         this.shares = 0;
         this.completed = false;
         this.postType = "news";
-        this.imageUrl = "";
+        this.imageUrls = [];
         this.show = true;
       }
 
@@ -253,26 +256,26 @@ export default {
         taskLabels,
         completed,
         author,
-        imageUrl,
+        imageUrls,
         show,
         id,
         time,
-        sortDate
+        sortDate,
       } = this;
       const taskEdit = {
         title,
         article,
         author,
         completed,
-        image: imageUrl,
+        images: imageUrls,
         labels: taskLabels,
-        show
+        show,
       };
 
       if (this.iAmEditing == true) {
         this.updateNewsfeed({
           ...this.task,
-          ...taskEdit
+          ...taskEdit,
         });
         this.imageChanged = false;
       } else {
@@ -285,11 +288,11 @@ export default {
           completed,
           author,
           time,
-          image: imageUrl,
+          images: imageUrls,
           labels: taskLabels,
           likes: [],
           shares: 0,
-          show
+          show,
         };
         this.imageChanged = false;
         this.addNewsfeed(taskNew);
@@ -298,16 +301,14 @@ export default {
       this.close();
     },
     filter(item, queryText, itemText) {
-      const hasValue = val => (val !== null ? val : "");
+      const hasValue = (val) => (val !== null ? val : "");
 
       const text = hasValue(item.title);
       const query = hasValue(queryText);
 
       return (
-        text
-          .toString()
-          .toLowerCase()
-          .indexOf(query.toString().toLowerCase()) > -1
+        text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) >
+        -1
       );
     },
 
@@ -343,55 +344,50 @@ export default {
 
           const uniqueTime = new Date().getTime();
 
-          const storageRef = firebase
-            .storage()
-            .ref(`newsfeed/${this.id}${uniqueTime}${ext}`)
-            .put(this.image[0]);
-          storageRef.on(
-            `state_changed`,
-            snapshot => {
-              this.uploadValue =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            error => {
-              console.log(error.message);
-            },
-            () => {
-              this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL().then(url => {
-                this.imageUrl = url;
-                console.log(this.id);
-                console.log(this.taskLabels[0]);
-                console.log(this.title);
-                console.log(this.article);
-                console.log(this.time);
-                console.log(this.author);
-                console.log(this.imageUrl);
-                console.log(this.likes);
-                console.log(this.shares);
-                console.log(this.show);
+          let photoDone = 0;
 
-                db.collection("newsfeed")
-                  .doc(this.id)
-                  .set({
-                    cat: this.taskLabels[0],
-                    title: this.title,
-                    article: this.article,
-                    time: this.time,
-                    author: this.author,
-                    image: this.imageUrl,
-                    likes: this.likes,
-                    shares: this.shares,
-                    show: this.show
-                  });
-                if (this.$refs.imgDropzone) {
-                  this.$refs.imgDropzone.removeAllFiles();
-                }
-                this.loading = false;
-                this.save();
-              });
-            }
-          );
+          for (var i = 0; i < this.images.length; i++) {
+            const storageRef = firebase
+              .storage()
+              .ref(`newsfeed/${this.id}${uniqueTime}${ext}`)
+              .put(this.image[0]);
+            storageRef.on(
+              `state_changed`,
+              (snapshot) => {
+                this.uploadValue =
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              },
+              (error) => {
+                console.log(error.message);
+              },
+              () => {
+                this.uploadValue = 100;
+                storageRef.snapshot.ref.getDownloadURL().then((url) => {
+                  this.imageUrls.push(url);
+                  photoDone++;
+
+                  if (photoDone == this.images.length) {
+                    db.collection("newsfeed").doc(this.id).set({
+                      cat: this.taskLabels[0],
+                      title: this.title,
+                      article: this.article,
+                      time: this.time,
+                      author: this.author,
+                      images: this.imageUrls,
+                      likes: this.likes,
+                      shares: this.shares,
+                      show: this.show,
+                    });
+                    if (this.$refs.imgDropzone) {
+                      this.$refs.imgDropzone.removeAllFiles();
+                    }
+                    this.loading = false;
+                    this.save();
+                  }
+                });
+              }
+            );
+          }
         } else {
           this.loading = true;
           db.collection("newsfeed")
@@ -402,12 +398,12 @@ export default {
               article: this.article,
               time: this.time,
               author: this.author,
-              image: this.imageUrl,
+              images: this.imageUrls,
               likes: this.likes,
               shares: this.shares,
-              show: this.show
+              show: this.show,
             })
-            .then(done => {
+            .then((done) => {
               if (this.$refs.imgDropzone) {
                 this.$refs.imgDropzone.removeAllFiles();
               }
@@ -450,25 +446,20 @@ export default {
 
       let myimage = firebase.storage().refFromURL(img);
 
-      db.collection("newsfeed")
-        .doc(this.id)
-        .update({
-          image: ""
-        });
+      var ind = this.imageUrls.indexOf(img);
 
-      if (this.imageChanged) {
-        if (this.$refs.imgDropzone) {
-          this.$refs.imgDropzone.removeAllFiles();
-        }
-      }
-      this.imageUrl = "";
+      this.imageUrls.splice(ind, 1);
+
+      db.collection("newsfeed").doc(this.id).update({
+        images: this.imageUrls,
+      });
 
       myimage
         .delete()
-        .then(function() {
+        .then(function () {
           console.log("image deleted");
         })
-        .catch(function(error) {
+        .catch(function (error) {
           // Uh-oh, an error occurred!
           console.log("an error occurred");
         });
@@ -477,7 +468,7 @@ export default {
       try {
         //const imageName = uuid.v1();
         var metaData = {
-          contentType: "image/png"
+          contentType: "image/png",
         };
 
         //this.image = this.$refs.imgDropzone.getAcceptedFiles()
@@ -490,7 +481,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    }
-  }
+    },
+  },
 };
 </script>

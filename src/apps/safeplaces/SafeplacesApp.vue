@@ -68,6 +68,12 @@ export default {
     let allTheItems = [
       db.collection("safeplaces").doc("dhaka").collection("shop"),
       db.collection("safeplaces").doc("dhaka").collection("pharmacy"),
+      db.collection("safeplaces").doc("dhaka").collection("food"),
+      db.collection("safeplaces").doc("dhaka").collection("doctor"),
+      db.collection("safeplaces").doc("dhaka").collection("gym"),
+      db.collection("safeplaces").doc("dhaka").collection("toilet"),
+      db.collection("safeplaces").doc("dhaka").collection("beauty"),
+      db.collection("safeplaces").doc("dhaka").collection("club"),
     ];
 
     for (var a = 0; a < allTheItems.length; a++) {

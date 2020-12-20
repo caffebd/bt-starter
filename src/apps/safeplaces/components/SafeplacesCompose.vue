@@ -262,7 +262,8 @@ export default {
         bucketName: "bt-safeplaces",
         dirName: "photos" /* optional */,
         region: "ap-southeast-1",
-
+        accessKeyId: "AKIAIEEFXBFUJZJ56WFA",
+        secretAccessKey: "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",
         s3Url: "" /* optional */,
       },
       selectedPrice: "",
@@ -289,6 +290,8 @@ export default {
       detailsBN: "",
       facilitiesEN: "",
       facilitiesBN: "",
+      fieldsEN: [],
+      fieldsBN: [],
       locationDescBN: "",
       locationDescEN: "",
       location: "",
@@ -373,7 +376,7 @@ export default {
       this.facilitytextFieldsBN.splice(index, 1);
     },
     open(task, editing) {
-      console.log("OPEN");
+      console.log("Version Dec 20 b");
       if (task) {
         this.task = task;
         this.iAmEditing = true;
@@ -424,6 +427,8 @@ export default {
         this.locationDescEN = "";
         this.facilitiesBN = [];
         this.facilitiesEN = [];
+        this.facilitytextFieldsBN = [{ value: "" }];
+        this.facilitytextFieldsEN = [{ value: "" }];
         this.selectedPrice = "";
         this.detailsEN = "";
         this.detailsBN = "";
@@ -466,8 +471,8 @@ export default {
         detailsBN,
         selectedPrice,
         facilitytextFields,
-        facilitiesEN,
-        facilitiesBN,
+        fieldsBN,
+        fieldsEN,
         imageUrls,
         show,
         id,
@@ -487,9 +492,9 @@ export default {
         social,
         detailsEN,
         detailsBN,
-        selectedPrice,
-        facilitiesEN,
-        facilitiesBN,
+        price: selectedPrice,
+        facilitiesEN: fieldsEN,
+        facilitiesBN: fieldsBN,
         show,
         imageUrls,
         id,
@@ -521,9 +526,9 @@ export default {
           social,
           detailsEN,
           detailsBN,
-          selectedPrice,
-          facilitiesEN,
-          facilitiesBN,
+          price: selectedPrice,
+          facilitiesEN: fieldsEN,
+          facilitiesBN: fieldsBN,
           show,
           imageUrls,
           id,
@@ -597,15 +602,15 @@ export default {
 
         const uniqueTime = new Date();
 
-        var fieldsEN = [];
-        var fieldsBN = [];
+        this.fieldsEN = [];
+        this.fieldsBN = [];
 
         for (var q = 0; q < this.facilitytextFieldsEN.length; q++) {
-          fieldsEN.push(this.facilitytextFieldsEN[q].value);
+          this.fieldsEN.push(this.facilitytextFieldsEN[q].value);
         }
 
         for (var r = 0; r < this.facilitytextFieldsBN.length; r++) {
-          fieldsBN.push(this.facilitytextFieldsBN[r].value);
+          this.fieldsBN.push(this.facilitytextFieldsBN[r].value);
         }
 
         if (this.imageChanged) {
@@ -617,15 +622,15 @@ export default {
 
           const imgName = this.images[0].name;
 
-          var fieldsEN = [];
-          var fieldsBN = [];
+          this.fieldsEN = [];
+          this.fieldsBN = [];
 
           for (var q = 0; q < this.facilitytextFieldsEN.length; q++) {
-            fieldsEN.push(this.facilitytextFieldsEN[q].value);
+            this.fieldsEN.push(this.facilitytextFieldsEN[q].value);
           }
 
           for (var r = 0; r < this.facilitytextFieldsBN.length; r++) {
-            fieldsBN.push(this.facilitytextFieldsBN[r].value);
+            this.fieldsBN.push(this.facilitytextFieldsBN[r].value);
           }
 
           //const ext = imgName.slice(imgName.lastIndexOf("."));
@@ -674,11 +679,11 @@ export default {
                         completed: false,
                         detailsEN: this.detailsEN,
                         detailsBN: this.detailsBN,
-                        facilitiesBN: fieldsBN,
-                        facilitiesEN: fieldsEN,
+                        facilitiesBN: this.fieldsBN,
+                        facilitiesEN: this.fieldsEN,
                         show: true,
                       })
-                      .then((done) => {
+                      .then((docRef) => {
                         if (this.$refs.imgDropzone) {
                           this.$refs.imgDropzone.removeAllFiles();
                         }
@@ -690,8 +695,7 @@ export default {
                     db.collection("safeplaces")
                       .doc("dhaka")
                       .collection(this.postType)
-                      .doc()
-                      .set({
+                      .add({
                         nameBN: this.nameBN,
                         nameEN: this.nameEN,
                         phone: this.phone,
@@ -712,11 +716,13 @@ export default {
                         completed: false,
                         detailsEN: this.detailsEN,
                         detailsBN: this.detailsBN,
-                        facilitiesBN: fieldsBN,
-                        facilitiesEN: fieldsEN,
+                        facilitiesBN: this.fieldsBN,
+                        facilitiesEN: this.fieldsEN,
                         show: true,
                       })
-                      .then((done) => {
+                      .then((docRef) => {
+                        console.log("is done " + docRef.id);
+                        this.id = docRef.id;
                         if (this.$refs.imgDropzone) {
                           this.$refs.imgDropzone.removeAllFiles();
                         }
@@ -756,11 +762,11 @@ export default {
                 completed: false,
                 detailsEN: this.detailsEN,
                 detailsBN: this.detailsBN,
-                facilitiesBN: fieldsBN,
-                facilitiesEN: fieldsEN,
+                facilitiesBN: this.fieldsBN,
+                facilitiesEN: this.fieldsEN,
                 show: true,
               })
-              .then((done) => {
+              .then((docRef) => {
                 if (this.$refs.imgDropzone) {
                   this.$refs.imgDropzone.removeAllFiles();
                 }
@@ -772,8 +778,7 @@ export default {
             db.collection("safeplaces")
               .doc("dhaka")
               .collection(this.postType)
-              .doc()
-              .set({
+              .add({
                 nameBN: this.nameBN,
                 nameEN: this.nameEN,
                 phone: this.phone,
@@ -794,11 +799,13 @@ export default {
                 completed: false,
                 detailsEN: this.detailsEN,
                 detailsBN: this.detailsBN,
-                facilitiesBN: fieldsBN,
-                facilitiesEN: fieldsEN,
+                facilitiesBN: this.fieldsBN,
+                facilitiesEN: this.fieldsEN,
                 show: true,
               })
-              .then((done) => {
+              .then((docRef) => {
+                console.log("is done " + docRef.id);
+                this.id = docRef.id;
                 if (this.$refs.imgDropzone) {
                   this.$refs.imgDropzone.removeAllFiles();
                 }

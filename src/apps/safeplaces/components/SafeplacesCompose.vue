@@ -262,8 +262,7 @@ export default {
         bucketName: "bt-safeplaces",
         dirName: "photos" /* optional */,
         region: "ap-southeast-1",
-        accessKeyId: "AKIAJGQRSYMP6KK5TAGQ",
-        secretAccessKey: "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",
+
         s3Url: "" /* optional */,
       },
       selectedPrice: "",

@@ -1,6 +1,6 @@
 <template>
   <safeplaces-list
-    :safeplaces="labelNewsfeed"
+    :safeplaces="labelSafeplaces"
     @edit-safeplaces="$emit('edit-safeplaces', $event)"
   />
 </template>

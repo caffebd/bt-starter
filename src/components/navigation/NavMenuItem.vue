@@ -1,7 +1,7 @@
 
 <template>
 <div>
-    <v-list-item v-if="menuItem.text !='News Pages Top' && userRole==true"
+    <v-list-item v-if="menuItem.text !='News Pages Top' && menuItem.text !='Places Pages Top'&& userRole==true"
       :input-value="menuItem.value"
       :to="menuItem.link"
       :exact="menuItem.exact"
@@ -9,6 +9,7 @@
       active-class="primary--text"
       link
     >
+    
       <v-list-item-icon >
       <v-badge
         v-if="menuItem.text=='Alerts Page'"
@@ -57,6 +58,28 @@
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
+
+    <v-list-item v-if="menuItem.text=='Places Pages Top' && userRole==false"
+      :input-value="menuItem.value"
+      :to="menuItem.link"
+      :exact="menuItem.exact"
+      :disabled="menuItem.disabled"
+      active-class="primary--text"
+      link
+    >
+      <v-list-item-icon v-if="menuItem.text=='Places Pages Top'">
+        <v-icon color="blue" :small="small" :class="{ 'grey--text': menuItem.disabled }">
+          {{ menuItem.icon || 'mdi-circle-medium' }}
+        </v-icon>
+      </v-list-item-icon>
+
+      <v-list-item-content v-if="menuItem.text=='Places Pages Top'">
+        <v-list-item-title>
+          {{ menuItem.key ? $t(menuItem.key) : menuItem.text }}
+        </v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+
    </div>
   </template>
 

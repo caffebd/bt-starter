@@ -9,6 +9,7 @@ export default {
     items: [
       { icon: 'mdi-alert-circle-outline', key: 'menu.appAlerts', text: 'Alerts Page', link: '/apps/alerts' },
       { icon: 'mdi-newspaper-variant-outline', key: 'menu.formspage', text: 'News Pages Top', link: '/apps/newsfeed' },
+      { icon: 'mdi-map-legend', key: 'menu.placespage', text: 'Places Pages Top', link: '/apps/safeplaces' },
       { icon: 'mdi-chart-bar', key: 'menu.dashboard', text: 'Dashboard', link: '/dashboard/analytics' },
       { icon: 'mdi-map-search-outline', key: 'menu.mapspage', text: 'Maps', link: '/mapspage' },
       //{ icon: 'mdi-file-outline', key: 'menu.blank', text: 'Map Page', link: '/dashboard/map' },

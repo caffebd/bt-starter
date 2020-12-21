@@ -27,4 +27,5 @@ SafeplacesLabelPage.vue
 NewsfeedCompose.vue
 NewsfeedList.vue
 NavMenuItem.vue
+mutations.js
 

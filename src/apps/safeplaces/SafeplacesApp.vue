@@ -87,7 +87,7 @@ export default {
 
           var setLabel = [doc.data()["cat"]];
 
-          if (change.type == "typeEN") {
+          if (change.type == "removed") {
             const dTask = {
               id: doc.id,
             };

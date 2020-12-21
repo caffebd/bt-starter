@@ -84,7 +84,10 @@
         <div
           v-show="$store.state.user.isAdmin"
           class="d-flex align-center"
-        ></div>
+          <v-btn v-show="$store.state.user.isAdmin" icon @click.stop="beginDelete(task)">
+            <v-icon>mdi-delete-outline</v-icon>
+          </v-btn>
+        </div>
       </div>
     </v-slide-y-transition>
   </v-card>

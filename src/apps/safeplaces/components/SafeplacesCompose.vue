@@ -131,7 +131,7 @@
                   <v-select
                     v-model="selectedPrice"
                     :items="priceTypes"
-                    label="Outlined style"
+                    label="Price | দাম"
                     dense
                     outlined
                   ></v-select>
@@ -178,6 +178,11 @@
                   cols="4"
                 >
                   <v-img :src="anImage" aspect-ratio="1" class="grey lighten-2">
+                    <span @click="deleteImage(anImage)"
+                      ><v-icon left color="red" large class="pa-1"
+                        >mdi-delete-circle</v-icon
+                      ></span
+                    >
                     <template v-slot:placeholder>
                       <v-row
                         class="fill-height ma-0"
@@ -244,6 +249,7 @@ import firebase from "firebase";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
 import S3 from "aws-s3";
+import AWSBUCKET from "s3-bucket-toolkit";
 export default {
   components: {
     vueDropzone: vue2Dropzone,
@@ -258,7 +264,14 @@ export default {
         acceptedFiles: ".jpg, .jpeg, .png",
         maxFiles: 4,
       },
-      awsConfig: {},
+      awsConfig: {
+        bucketName: "bt-safeplaces",
+        dirName: "photos" /* optional */,
+        region: "ap-southeast-1",
+        accessKeyId: "",
+        secretAccessKey: "",
+        s3Url: "" /* optional */,
+      },
       selectedPrice: "",
       priceTypes: [
         "Free",
@@ -496,6 +509,7 @@ export default {
         completed: false,
         images: imageUrls,
         labels: [postType],
+        category: postType
       };
 
       if (this.iAmEditing == true) {
@@ -530,6 +544,7 @@ export default {
           completed: false,
           images: imageUrls,
           labels: [postType],
+          category: postType
         };
         this.imageChanged = false;
         this.addSafeplaces(taskNew);
@@ -547,6 +562,36 @@ export default {
         text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) >
         -1
       );
+    },
+
+    async testDel(img) {
+      var name = img.slice(54, img.length);
+
+      console.log(name);
+
+      const AWSBucketF = require("s3-bucket-toolkit");
+
+      const bucket = new AWSBucketF({
+        accessKeyId: "",
+        secretAccessKey: "",
+        region: "ap-southeast-1",
+        bucketACL: "public-read",
+        bucketName: "bt-safeplaces",
+        pagingDelay: 500, // (optional) set a global delay in between s3 api calls, default: 500ms
+      });
+
+      //   bucket
+      //     .deleteFiles({
+      //       files: [name],
+      //     })
+      //     .then(function (res) {
+      //       /* res.Deleted => Deleted contents */
+      //       console.log(res);
+      //     })
+      //     .catch(function (err) {
+      //       /* err */
+      //     });
+      // },
     },
 
     async awsUpload() {
@@ -838,24 +883,46 @@ export default {
       this.loading = true;
     },
     deleteImage(img) {
+      var name = img.slice(54, img.length);
+
       var ind = this.imageUrls.indexOf(img);
 
       this.imageUrls.splice(ind, 1);
 
-      // db.collection("safeplaces")
-      //   .doc("dhaka")
-      //   .collection(this.postType)
-      //   .doc(this.id)
-      //   .update({
-      //     images: this.imageUrls,
-      //   });
+      db.collection("safeplaces")
+        .doc("dhaka")
+        .collection(this.postType)
+        .doc(this.id)
+        .update({
+          images: this.imageUrls,
+        });
 
-      const S3Client = new S3(this.awsConfig);
+      console.log(name);
 
-      S3Client.deleteFile("16083625622084815432130068122771608403377328.jpeg")
-        .then((response) => console.log(response))
-        .catch((err) => console.error(err));
+      const AWSBucketF = require("s3-bucket-toolkit");
+
+      const bucket = new AWSBucketF({
+        accessKeyId: "",
+        secretAccessKey: "",
+        region: "ap-southeast-1",
+        bucketACL: "public-read",
+        bucketName: "bt-safeplaces",
+        pagingDelay: 500, // (optional) set a global delay in between s3 api calls, default: 500ms
+      });
+
+      bucket
+        .deleteFiles({
+          files: [name],
+        })
+        .then(function (res) {
+          /* res.Deleted => Deleted contents */
+          console.log(res);
+        })
+        .catch(function (err) {
+          /* err */
+        });
     },
+
     async afterComplete(file) {
       try {
         //const imageName = uuid.v1();
